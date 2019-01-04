@@ -1,0 +1,10 @@
+*.so
+*.o
+config
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+app/
+!app/*.c
+!app/makefile
