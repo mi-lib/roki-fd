@@ -8,3 +8,6 @@ GTAGS
 app/
 !app/*.c
 !app/makefile
+example/*/
+!example/model/
+!example/*/*.c

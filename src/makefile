@@ -10,7 +10,7 @@ LD=gcc
 LDFLAGS=-shared
 SIGNUP=echo "Roki-FD ver."$(VERSION)" Copyright (C) 2018 Tomomichi Sugihara (Zhidao)" >>
 
-OBJ=
+OBJ=rkfd_sim.o rkfd_util.o rkfd_cd.o rkfd_penalty.o rkfd_property.o rkfd_solver.o rkfd_vert.o rkfd_volume.o rkfd_mlcp.o
 DLIB=librokifd.so
 
 TARGET=$(DLIB)
