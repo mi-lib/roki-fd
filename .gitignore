@@ -5,9 +5,10 @@ GPATH
 GRTAGS
 GSYMS
 GTAGS
-app/
+app/*
 !app/*.c
 !app/makefile
+!app/rokifd-config
 example/*/
 !example/model/
 !example/*/*.c
