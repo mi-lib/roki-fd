@@ -72,8 +72,8 @@ void rkFDDestroy(rkFD *fd)
 void _rkFDCellDatSetOffset(rkFD *fd, rkFDCellDat *ld, int offset)
 {
   ld->_offset = offset;
-  zVecBuf(&ld->_dis) = &zVecElem(fd->dis,offset);
-  zVecBuf(&ld->_vel) = &zVecElem(fd->vel,offset);
+  zVecBuf(&ld->_dis) = &zVecElemNC(fd->dis,offset);
+  zVecBuf(&ld->_vel) = &zVecElemNC(fd->vel,offset);
 }
 
 bool _rkFDAllocJointStatePush(rkFD *fd, rkFDCell *rlc)
@@ -178,7 +178,9 @@ rkFDCellDat *_rkFDCellDatInit(rkFDCellDat *ld)
 {
   rkChainABIInit( rkFDCellDatChain(ld) );
   ld->_dis.size = ld->_vel.size = ld->_acc.size = rkChainJointSize( rkFDCellDatChain(ld) );
-  ld->_dis.elem = ld->_vel.elem = ld->_acc.elem = NULL;
+  ld->_dis.buf = NULL;
+  ld->_vel.buf = NULL;
+  ld->_acc.buf = NULL;
   _rkFDCellDatJointRefInit( ld );
   return ld;
 }
@@ -193,9 +195,6 @@ rkFDCell *_rkFDCellPush(rkFD *fd, rkFDCell *lc)
     return NULL;
   }
   /* cd reg */
-  /* eprintf("cdreg\n"); */
-  /* rkChainWrite(rkFDCellChain(lc)); */
-  /* getchar(); */
   rkCDChainReg( rkFDCDBase(&fd->cd), rkFDCellChain(lc), true );
   /* set contact info */
   zListForEach( &rkFDCDBase(&fd->cd)->plist, cdp ){
@@ -260,7 +259,7 @@ bool rkFDChainUnreg(rkFD *fd, rkFDCell *cell)
 bool rkFDContactInfoReadFile(rkFD *fd, char filename[]){
   rkCDPair *cdp;
 
-  if( zArrayNum( &fd->ci ) != 0)
+  if( zArraySize(&fd->ci) != 0)
     rkContactInfoPoolDestroy( &fd->ci );
   if( !rkContactInfoPoolReadFile( &fd->ci, filename ) ) return false;
   /* set contact info */
@@ -293,9 +292,9 @@ void _rkFDConnectJointState(rkFD *fd, zVec dis, zVec vel, zVec acc)
   rkFDCell *lc;
 
   zListForEach( &fd->list, lc ){
-    lc->data._dis.elem = &zVecElem(dis,lc->data._offset);
-    lc->data._vel.elem = &zVecElem(vel,lc->data._offset);
-    lc->data._acc.elem = &zVecElem(acc,lc->data._offset);
+    lc->data._dis.buf = &zVecElemNC(dis,lc->data._offset);
+    lc->data._vel.buf = &zVecElemNC(vel,lc->data._offset);
+    lc->data._acc.buf = &zVecElemNC(acc,lc->data._offset);
     rkChainFK( rkFDCellChain(lc), &lc->data._dis );
     rkChainSetJointVelAll( rkFDCellChain(lc), &lc->data._vel );
     rkChainUpdateVel( rkFDCellChain(lc) );
@@ -313,8 +312,8 @@ zVec rkFDODECatDefault(zVec x, double k, zVec v, zVec xnew, void *util)
   zListForEach( &((rkFD *)util)->list, lc ){
     lv.size  = rkChainJointSize( rkFDCellChain(lc) );
     lxn.size = rkChainJointSize( rkFDCellChain(lc) );
-    lv.elem  = &zVecElem(v,   lc->data._offset);
-    lxn.elem = &zVecElem(xnew,lc->data._offset);
+    lv.buf   = &zVecElemNC(v,   lc->data._offset);
+    lxn.buf  = &zVecElemNC(xnew,lc->data._offset);
     rkChainCatJointDisAll( rkFDCellChain(lc), &lxn, k, &lv );
   }
   return xnew;
@@ -329,8 +328,8 @@ zVec rkFDODESubDefault(zVec x1, zVec x2, zVec dx, void *util)
   zListForEach( &((rkFD *)util)->list, lc ){
     lx2.size = rkChainJointSize( rkFDCellChain(lc) );
     ldx.size = rkChainJointSize( rkFDCellChain(lc) );
-    lx2.elem = &zVecElem(x2,lc->data._offset);
-    ldx.elem = &zVecElem(dx,lc->data._offset);
+    lx2.buf  = &zVecElemNC(x2,lc->data._offset);
+    ldx.buf  = &zVecElemNC(dx,lc->data._offset);
     rkChainSubJointDisAll( rkFDCellChain(lc), &ldx, &lx2 );
   }
   return dx;
@@ -349,7 +348,7 @@ void rkFDFK(rkFD *fd, zVec dis)
 
   zListForEach( &fd->list, lc ){
     ldis.size = rkChainJointSize( rkFDCellChain(lc) );
-    ldis.elem = &zVecElem(dis,lc->data._offset);
+    ldis.buf  = &zVecElemNC(dis,lc->data._offset);
     rkChainFK( rkFDCellChain(lc), &ldis );
   }
 }
@@ -361,8 +360,8 @@ void rkFDUpdateRate(rkFD *fd, zVec vel, zVec acc)
 
   zListForEach( &fd->list, lc ){
     lvel.size = lacc.size = rkChainJointSize( rkFDCellChain(lc) );
-    lvel.elem = &zVecElem(vel,lc->data._offset);
-    lacc.elem = &zVecElem(acc,lc->data._offset);
+    lvel.buf  = &zVecElemNC(vel,lc->data._offset);
+    lacc.buf  = &zVecElemNC(acc,lc->data._offset);
     rkChainSetJointRateAll( rkFDCellChain(lc), &lvel, &lacc );
     rkChainUpdateRateGrav( rkFDCellChain(lc) );
   }
@@ -479,7 +478,7 @@ bool _rkFDUpdateInitSolver(rkFD *fd)
 
   if( zListNum(&fd->list) != 0 ){
     zArrayAlloc( rkFDSolverChains(&fd->solver), rkFDChain*, zListNum(&fd->list) );
-    if( zArrayNum(rkFDSolverChains(&fd->solver)) == 0 ){
+    if( zArraySize(rkFDSolverChains(&fd->solver)) == 0 ){
       ZALLOCERROR();
       return false;
     }

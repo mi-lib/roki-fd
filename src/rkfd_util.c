@@ -9,7 +9,7 @@ zVec3D *rkFDLinkPointWldVel(rkLink *link, zVec3D *p, zVec3D *v)
   zVec6D v6;
   zVec3D tempv;
 
-  zMulMatVec6D( rkLinkWldAtt(link), rkLinkVel(link), &v6 );
+  zMulMat3DVec6D( rkLinkWldAtt(link), rkLinkVel(link), &v6 );
   zVec3DSub( p, rkLinkWldPos(link) ,&tempv );
   zVec3DOuterProd( zVec6DAng(&v6), &tempv, &tempv );
   zVec3DAdd( zVec6DLin(&v6), &tempv, v );
@@ -21,7 +21,7 @@ void rkFDLinkAddSlideVel(rkCDCell *cell, zVec3D *p, zVec3D *n, zVec3D *v)
   zVec3D sv, tmpv;
 
   zVec3DSub( p, rkLinkWldPos(cell->data.link), &tmpv );
-  zMulMatVec3D( rkLinkWldAtt(cell->data.link), &cell->data.slide_axis, &sv );
+  zMulMat3DVec3D( rkLinkWldAtt(cell->data.link), &cell->data.slide_axis, &sv );
   zVec3DOuterProd( &sv, &tmpv, &sv );
   zVec3DCatDRC( &sv, -zVec3DInnerProd( &sv, n ), n );
   if( zIsTiny( zVec3DNorm( &sv ) ) ){
@@ -56,7 +56,7 @@ zVec6D *rkFDLinkPointWldVel6D(rkLink *link, zVec3D *p, zVec6D *v)
 {
   zVec3D tempv;
 
-  zMulMatVec6D( rkLinkWldAtt(link), rkLinkVel(link), v );
+  zMulMat3DVec6D( rkLinkWldAtt(link), rkLinkVel(link), v );
   zVec3DSub( p, rkLinkWldPos(link) ,&tempv );
   zVec3DOuterProd( zVec6DAng(v), &tempv, &tempv );
   zVec3DAddDRC( zVec6DLin(v), &tempv );
@@ -87,9 +87,9 @@ zVec3D *rkFDLinkPointWldAcc(rkLink *link, zVec3D *p, zVec3D *a)
   zVec3D vp;
 
   zVec3DSub( p, rkLinkWldPos(link), &vp );
-  zMulMatTVec3DDRC( rkLinkWldAtt(link), &vp );
+  zMulMat3DTVec3DDRC( rkLinkWldAtt(link), &vp );
   rkLinkPointAcc( link, &vp, a );
-  zMulMatVec3DDRC( rkLinkWldAtt(link), a );
+  zMulMat3DVec3DDRC( rkLinkWldAtt(link), a );
   return a;
 }
 
@@ -115,10 +115,10 @@ zVec6D *rkFDLinkPointWldAcc6D(rkLink *link, zVec3D *p, zVec6D *a)
   zVec3D vp;
 
   zVec3DSub( p, rkLinkWldPos(link), &vp );
-  zMulMatTVec3DDRC( rkLinkWldAtt(link), &vp );
+  zMulMat3DTVec3DDRC( rkLinkWldAtt(link), &vp );
   rkLinkPointAcc( link, &vp, zVec6DLin(a) );
-  zMulMatVec3DDRC( rkLinkWldAtt(link), zVec6DLin(a) );
-  zMulMatVec3D( rkLinkWldAtt(link), rkLinkAngAcc(link), zVec6DAng(a) );
+  zMulMat3DVec3DDRC( rkLinkWldAtt(link), zVec6DLin(a) );
+  zMulMat3DVec3D( rkLinkWldAtt(link), rkLinkAngAcc(link), zVec6DAng(a) );
   return a;
 }
 
@@ -200,7 +200,7 @@ bool rkFDCrateSinCosTable(zVec table[2], int num, double offset){
   }
 	dth = zDeg2Rad( 360 ) / num;
 	for( i=0,th=0.0; i<num; i++,th+=dth )
-		zSinCos( th+offset, &zVecElem(table[0],i), &zVecElem(table[1],i) );
+		zSinCos( th+offset, &zVecElemNC(table[0],i), &zVecElemNC(table[1],i) );
   return true;
 }
 
@@ -215,12 +215,12 @@ void rkFDUpdateRefSlide(rkCDPairDat *pd, rkCDVert *cdv, double dt)
   for( i=0; i<2; i++ ){
     if( pd->cell[i]->data.slide_mode ){
       zVec3DSub( cdv->data.vert, rkLinkWldPos(pd->cell[i]->data.link), &tmpv );
-      zMulMatVec3D( rkLinkWldAtt(pd->cell[i]->data.link), &pd->cell[i]->data.slide_axis, &sv );
+      zMulMat3DVec3D( rkLinkWldAtt(pd->cell[i]->data.link), &pd->cell[i]->data.slide_axis, &sv );
       zVec3DOuterProd( &sv, &tmpv, &sv );
       zVec3DCatDRC( &sv, -zVec3DInnerProd( &sv, &cdv->data.norm ), &cdv->data.norm );
       if( !zIsTiny( zVec3DNorm( &sv ) ) ){
         zVec3DMulDRC( &sv, (pd->cell[i]==cdv->data.cell?-1.0:1.0) * dt * pd->cell[i]->data.slide_vel/zVec3DNorm( &sv ) );
-        zMulMatTVec3DDRC( rkLinkWldAtt(pd->cell[(pd->cell[i]==cdv->data.cell?1:0)]->data.link), &sv );
+        zMulMat3DTVec3DDRC( rkLinkWldAtt(pd->cell[(pd->cell[i]==cdv->data.cell?1:0)]->data.link), &sv );
         zVec3DAddDRC( &cdv->data._ref, &sv );
       }
     }
@@ -265,7 +265,7 @@ void rkFDContactForcePushWrench(rkCDPairDat *pd, rkCDVert *cdv)
     w = zAlloc( rkWrench, 1 );
     rkWrenchInit( w );
     zXfer3DInv( rkLinkWldFrame(pd->cell[i]->data.link), cdv->data.vert, rkWrenchPos(w) );
-    zMulMatTVec3D( rkLinkWldAtt(pd->cell[i]->data.link), &cdv->data.f, rkWrenchForce(w) );
+    zMulMat3DTVec3D( rkLinkWldAtt(pd->cell[i]->data.link), &cdv->data.f, rkWrenchForce(w) );
     if( pd->cell[i] != cdv->data.cell )
       zVec3DRevDRC( rkWrenchForce(w) );
     rkWrenchListPush( rkLinkExtWrenchBuf(pd->cell[i]->data.link), w );

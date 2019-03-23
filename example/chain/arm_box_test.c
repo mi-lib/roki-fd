@@ -34,24 +34,24 @@ int main(int argc, char *argv[])
   fp[1] = fopen( "box.zvs", "w" );
 
   rkFDCreate( &fd );
-	rkFDContactInfoReadFile( &fd, "../model/cinfo.zci" );
+	rkFDContactInfoReadFile( &fd, "../model/contactinfo.ztk" );
 
-  cell[0] = rkFDChainRegFile( &fd, "../model/arm_2DoF.zkc" );
-  cell[1] = rkFDChainRegFile( &fd, "../model/box.zkc" );
-  rkFDChainRegFile( &fd, "../model/floor.zkc" );
+  cell[0] = rkFDChainRegFile( &fd, "../model/arm_2DoF.ztk" );
+  cell[1] = rkFDChainRegFile( &fd, "../model/box.ztk" );
+  rkFDChainRegFile( &fd, "../model/floor.ztk" );
 
   /* init */
   /* chain 0 */
   dis[0] = zVecAlloc(rkChainJointSize(rkFDCellChain(cell[0])));
-  zVecElem(dis[0],0) = zDeg2Rad(90);
-  zVecElem(dis[0],1) =-zDeg2Rad(90);
+  zVecElemNC(dis[0],0) = zDeg2Rad(90);
+  zVecElemNC(dis[0],1) =-zDeg2Rad(90);
   rkFDChainSetDis( cell[0], dis[0] );
   rkCDPairChainUnreg( rkFDCDBase(&fd.cd), rkFDCellChain(cell[0]));
   /* chain 1 */
   dis[1] = zVecAlloc(rkChainJointSize(rkFDCellChain(cell[1])));
-  zVecElem(dis[1],0) = 0.02;
-  zVecElem(dis[1],1) = 0.6;
-  zVecElem(dis[1],2) = 0.2;
+  zVecElemNC(dis[1],0) = 0.02;
+  zVecElemNC(dis[1],1) = 0.6;
+  zVecElemNC(dis[1],2) = 0.2;
   rkFDChainSetDis( cell[1], dis[1] );
 
   /* ode */
