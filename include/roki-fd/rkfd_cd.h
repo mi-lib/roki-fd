@@ -26,9 +26,9 @@ typedef struct{
 } rkFDCD;
 
 #define rkFDCDBase(c) ( (rkCD*)(c) )
-#define rkFDCDElastNum(c)    zArrayNum(&(c)->elast_pairs)
+#define rkFDCDElastNum(c)    zArraySize(&(c)->elast_pairs)
 #define rkFDCDElastPair(c,i) ( *zArrayElem(&(c)->elast_pairs,i) )
-#define rkFDCDRigidNum(c)    zArrayNum(&(c)->rigid_pairs)
+#define rkFDCDRigidNum(c)    zArraySize(&(c)->rigid_pairs)
 #define rkFDCDRigidPair(c,i) ( *zArrayElem(&(c)->rigid_pairs,i) )
 
 #define rkFDCDForEachElastPair(c,p) rkFDArrayForEach(&(c)->elast_pairs, p)
