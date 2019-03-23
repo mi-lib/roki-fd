@@ -25,7 +25,7 @@ bool rkFDCDUpdateInit(rkFDCD *cd){
 
   zArrayAlloc( &cd->elast_pairs, rkCDPairDat*, zListNum( &cd->cd.plist ) );
   zArrayAlloc( &cd->rigid_pairs, rkCDPairDat*, zListNum( &cd->cd.plist ) );
-  if( zArrayNum( &cd->elast_pairs ) == 0 || zArrayNum( &cd->rigid_pairs ) == 0 )
+  if( zArraySize( &cd->elast_pairs ) == 0 || zArraySize( &cd->rigid_pairs ) == 0 )
     return false;
   return true;
 }
@@ -34,16 +34,16 @@ void rkFDCDUpdate(rkFDCD *cd)
 {
   rkCDPair *cdp;
 
-  zArraySetNum( &cd->elast_pairs, 0 );
-  zArraySetNum( &cd->rigid_pairs, 0 );
+  zArraySize(&cd->elast_pairs) = 0;
+  zArraySize(&cd->rigid_pairs) = 0;
   zListForEach( &cd->cd.plist, cdp )
     if( cdp->data.is_col ){
       if( rkContactInfoType(cdp->data.ci) == RK_CONTACT_ELASTIC ){
-        *zArrayElemNC(&cd->elast_pairs,zArrayNum(&cd->elast_pairs)) = &cdp->data;
-        zArrayNum(&cd->elast_pairs)++;
+        *zArrayElemNC(&cd->elast_pairs,zArraySize(&cd->elast_pairs)) = &cdp->data;
+        zArraySize(&cd->elast_pairs)++;
       } else if( rkContactInfoType(cdp->data.ci) == RK_CONTACT_RIGID ){
-        *zArrayElemNC(&cd->rigid_pairs,zArrayNum(&cd->rigid_pairs)) = &cdp->data;
-        zArrayNum(&cd->rigid_pairs)++;
+        *zArrayElemNC(&cd->rigid_pairs,zArraySize(&cd->rigid_pairs)) = &cdp->data;
+        zArraySize(&cd->rigid_pairs)++;
       }
     }
 }
