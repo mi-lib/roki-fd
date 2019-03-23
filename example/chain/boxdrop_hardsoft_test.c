@@ -26,10 +26,10 @@ int main(int argc, char *argv[])
     fp[i] = fopen( name, "w" );
     cell[i] = rkFDChainRegFile( &fd, "../model/box.zkc" );
     dis[i] = zVecAlloc( rkChainJointSize(rkFDCellChain(cell[i])) );
-    zVecElem(dis[i],2) = 0.1 + i*0.2;
-    zVecElem(dis[i],3) = zDeg2Rad(zRandF(-90.0, 90.0));
-    zVecElem(dis[i],4) = zDeg2Rad(zRandF(-90.0, 90.0));
-    zVecElem(dis[i],5) = zDeg2Rad(zRandF(-90.0, 90.0));
+    zVecElemNC(dis[i],2) = 0.1 + i*0.2;
+    zVecElemNC(dis[i],3) = zDeg2Rad(zRandF(-90.0, 90.0));
+    zVecElemNC(dis[i],4) = zDeg2Rad(zRandF(-90.0, 90.0));
+    zVecElemNC(dis[i],5) = zDeg2Rad(zRandF(-90.0, 90.0));
     rkFDChainSetDis( cell[i], dis[i] );
     rkCDPairChainUnreg( rkFDCDBase(&fd.cd), rkFDCellChain(cell[i]) );
   }

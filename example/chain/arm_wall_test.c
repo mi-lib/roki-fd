@@ -43,8 +43,8 @@ int main(int argc, char *argv[])
   /* init */
   /* chain 0 */
   dis[0] = zVecAlloc(rkChainJointSize(rkFDCellChain(cell[0])));
-  zVecElem(dis[0],0) = zDeg2Rad(90);
-  zVecElem(dis[0],1) =-zDeg2Rad(90);
+  zVecElemNC(dis[0],0) = zDeg2Rad(90);
+  zVecElemNC(dis[0],1) =-zDeg2Rad(90);
   rkFDChainSetDis( cell[0], dis[0] );
   /* chain 1 */
   dis[1] = zVecAlloc(rkChainJointSize(rkFDCellChain(cell[1])));
