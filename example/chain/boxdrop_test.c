@@ -17,14 +17,14 @@ int main(int argc, char *argv[])
 
   /* zRandInit(); */
   rkFDCreate( &fd );
-  rkFDContactInfoReadFile( &fd, "../model/cinfo.zci" );
+	rkFDContactInfoReadFile( &fd, "../model/contactinfo.ztk" );
 
   n = argc > 1 ? atoi( argv[1] ) : N;
   if( n > NMAX ) n = NMAX;
   for( i=0; i<n; i++ ){
     sprintf( name, "%d.zvs", i+1 );
     fp[i] = fopen( name, "w" );
-    cell[i] = rkFDChainRegFile( &fd, "../model/box.zkc" );
+    cell[i] = rkFDChainRegFile( &fd, "../model/box.ztk" );
     dis[i] = zVecAlloc( rkChainJointSize(rkFDCellChain(cell[i])) );
     /* zVecElemNC(dis[i],0) = zRandF( -0.1, 0.1 ); */
     /* zVecElemNC(dis[i],1) = zRandF( -0.1, 0.1 ); */
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     rkCDPairChainUnreg( rkFDCDBase(&fd.cd), rkFDCellChain(cell[i]) );
   }
 
-  rkFDChainRegFile( &fd, "../model/floor.zkc" );
+  rkFDChainRegFile( &fd, "../model/floor.ztk" );
 
   /* ode */
   rkFDODE2Assign( &fd, Regular );

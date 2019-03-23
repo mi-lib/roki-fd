@@ -34,11 +34,11 @@ int main(int argc, char *argv[])
   fp[1] = fopen( "box.zvs", "w" );
 
   rkFDCreate( &fd );
-	rkFDContactInfoReadFile( &fd, "../model/cinfo.zci" );
+	rkFDContactInfoReadFile( &fd, "../model/contactinfo.ztk" );
 
-  cell[0] = rkFDChainRegFile( &fd, "../model/arm_2DoF.zkc" );
-  cell[1] = rkFDChainRegFile( &fd, "../model/box.zkc" );
-  rkFDChainRegFile( &fd, "../model/floor.zkc" );
+  cell[0] = rkFDChainRegFile( &fd, "../model/arm_2DoF.ztk" );
+  cell[1] = rkFDChainRegFile( &fd, "../model/box.ztk" );
+  rkFDChainRegFile( &fd, "../model/floor.ztk" );
 
   /* init */
   /* chain 0 */
