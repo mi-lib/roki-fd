@@ -17,23 +17,23 @@ int main(int argc, char *argv[])
 
   zRandInit();
   rkFDCreate( &fd );
-  rkFDContactInfoReadFile( &fd, "../model/cinfo.zci" );
+	rkFDContactInfoReadFile( &fd, "../model/contactinfo.ztk" );
 
   n = argc > 1 ? atoi( argv[1] ) : N;
   if( n > NMAX ) n = NMAX;
   for( i=0; i<n; i++ ){
     sprintf( name, "%d.zvs", i+1 );
     fp[i] = fopen( name, "w" );
-    cell[i] = rkFDChainRegFile( &fd, "../model/box.zkc" );
+    cell[i] = rkFDChainRegFile( &fd, "../model/box.ztk" );
     dis[i] = zVecAlloc( rkChainJointSize(rkFDCellChain(cell[i])) );
-    zVecElem(dis[i],2) = 0.1 + i*0.2;
-    zVecElem(dis[i],3) = zDeg2Rad(zRandF(-90.0, 90.0));
-    zVecElem(dis[i],4) = zDeg2Rad(zRandF(-90.0, 90.0));
-    zVecElem(dis[i],5) = zDeg2Rad(zRandF(-90.0, 90.0));
+    zVecElemNC(dis[i],2) = 0.1 + i*0.2;
+    zVecElemNC(dis[i],3) = zDeg2Rad(zRandF(-90.0, 90.0));
+    zVecElemNC(dis[i],4) = zDeg2Rad(zRandF(-90.0, 90.0));
+    zVecElemNC(dis[i],5) = zDeg2Rad(zRandF(-90.0, 90.0));
     rkFDChainSetDis( cell[i], dis[i] );
     rkCDPairChainUnreg( rkFDCDBase(&fd.cd), rkFDCellChain(cell[i]) );
   }
-  rkFDChainRegFile( &fd, "../model/floor_hardsoft.zkc" );
+  rkFDChainRegFile( &fd, "../model/floor_hardsoft.ztk" );
 
   /* ode */
   rkFDODE2Assign( &fd, Regular );
