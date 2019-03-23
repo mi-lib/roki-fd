@@ -85,12 +85,12 @@ void _rkFDSolverFrictionConstraint(rkFDSolver *s){
         fric = rkContactInfoKF((*pd)->ci);
       else
         fric = rkContactInfoSF((*pd)->ci);
-      fric *= zVecElem(_prp(s)->sc_table[1],0);
+      fric *= zVecElemNC(_prp(s)->sc_table[1],0);
 
       for( i=0; i<cnum; i++ ){
-        zMatElem(_prp(s)->nf,ioffset+i,offset  ) = fric;
-        zMatElem(_prp(s)->nf,ioffset+i,offset+1) = zVecElem(_prp(s)->sc_table[0],i);
-        zMatElem(_prp(s)->nf,ioffset+i,offset+2) = zVecElem(_prp(s)->sc_table[1],i);
+        zMatElemNC(_prp(s)->nf,ioffset+i,offset  ) = fric;
+        zMatElemNC(_prp(s)->nf,ioffset+i,offset+1) = zVecElemNC(_prp(s)->sc_table[0],i);
+        zMatElemNC(_prp(s)->nf,ioffset+i,offset+2) = zVecElemNC(_prp(s)->sc_table[1],i);
       }
       cnt++;
     }
@@ -113,7 +113,7 @@ void _rkFDSolverBiasAcc(rkFDSolver *s, zVec acc)
     zListForEach( &(*pd)->vlist, cdv ){
       rkFDChainPointRelativeAcc( *pd, cdv->data.vert, cdv->data.cell, &av );
       for( i=0; i<3; i++ )
-        zVecElem(acc,offset+i) = zVec3DInnerProd( &cdv->data.axis[i], &av );
+        zVecElemNC(acc,offset+i) = zVec3DInnerProd( &cdv->data.axis[i], &av );
       offset += 3;
     }
   }
@@ -133,14 +133,14 @@ void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec a)
         (*pd)->cell[1]->data.chain != cpd->cell[0]->data.chain &&
         (*pd)->cell[1]->data.chain != cpd->cell[1]->data.chain ){
       for( i=0; i<zListNum(&(*pd)->vlist); i++ ){
-        zVec3DClear( (zVec3D *)&zVecElem(a,offset) );
+        zVec3DClear( (zVec3D *)&zVecElemNC(a,offset) );
         offset += 3;
       }
     } else {
       zListForEach( &(*pd)->vlist, cdv ){
         rkFDChainPointRelativeAcc( *pd, cdv->data.vert, cdv->data.cell, &av );
         for( i=0; i<3; i++ )
-          zVecElem(a,offset+i) = zVec3DInnerProd( &cdv->data.axis[i], &av ) - zVecElem(b,offset+i);
+          zVecElemNC(a,offset+i) = zVec3DInnerProd( &cdv->data.axis[i], &av ) - zVecElemNC(b,offset+i);
         offset += 3;
       }
     }
@@ -165,13 +165,13 @@ void _rkFDSolverRelationAccForce(rkFDSolver *s)
           rkWrenchInit( _prp(s)->w[j] );
           if( (*pd)->cell[j]->data.type == RK_CD_CELL_STAT ) continue;
           zXfer3DInv( rkLinkWldFrame((*pd)->cell[j]->data.link), cdv->data.vert, rkWrenchPos(_prp(s)->w[j]) );
-          zMulMatTVec3D( rkLinkWldAtt((*pd)->cell[j]->data.link), &cdv->data.axis[i], rkWrenchForce(_prp(s)->w[j]) );
+          zMulMat3DTVec3D( rkLinkWldAtt((*pd)->cell[j]->data.link), &cdv->data.axis[i], rkWrenchForce(_prp(s)->w[j]) );
           if( (*pd)->cell[j] != cdv->data.cell )
             zVec3DRevDRC( rkWrenchForce(_prp(s)->w[j]) );
         }
         rkFDChainUpdateAccAddExForceTwo( *pd, _prp(s)->w );
         _rkFDSolverRelativeAcc( s, *pd, _prp(s)->b, _prp(s)->t );
-        zMatSetCol( _prp(s)->a, offset+i, _prp(s)->t );
+        zMatPutCol( _prp(s)->a, offset+i, _prp(s)->t );
 
         /* restore ABIPrp */
         rkFDChainABIPopPrpExForceTwo( *pd );
@@ -200,9 +200,9 @@ void _rkFDSolverBiasVel(rkFDSolver *s)
     zListForEach( &(*pd)->vlist, cdv ){
       rkFDChainPointRelativeVel( *pd, cdv->data.vert, &cdv->data.norm, cdv->data.cell, &cdv->data.vel );
 
-      zVecElem(_prp(s)->b,offset  ) += zVec3DInnerProd( &cdv->data.vel, &cdv->data.axis[0] );
-      zVecElem(_prp(s)->b,offset+1) += zVec3DInnerProd( &cdv->data.vel, &cdv->data.axis[1] );
-      zVecElem(_prp(s)->b,offset+2) += zVec3DInnerProd( &cdv->data.vel, &cdv->data.axis[2] );
+      zVecElemNC(_prp(s)->b,offset  ) += zVec3DInnerProd( &cdv->data.vel, &cdv->data.axis[0] );
+      zVecElemNC(_prp(s)->b,offset+1) += zVec3DInnerProd( &cdv->data.vel, &cdv->data.axis[1] );
+      zVecElemNC(_prp(s)->b,offset+2) += zVec3DInnerProd( &cdv->data.vel, &cdv->data.axis[2] );
       offset += 3;
     }
   }
@@ -226,9 +226,9 @@ void _rkFDSolverCompensateDepth(rkFDSolver *s)
       k = rkContactInfoK((*pd)->ci);
       /* k = rkContactInfoK((*pd)->ci) / ( 1 + rkFDDT(fd)*rkContactInfoK((*pd)->ci) ); */
 
-      zVecElem(_prp(s)->c,offset  ) = zVecElem(_prp(s)->b,offset  ) + k        * zVec3DInnerProd( &d, &cdv->data.axis[0] );
-      zVecElem(_prp(s)->c,offset+1) = zVecElem(_prp(s)->b,offset+1) + k * fric * zVec3DInnerProd( &d, &cdv->data.axis[1] );
-      zVecElem(_prp(s)->c,offset+2) = zVecElem(_prp(s)->b,offset+2) + k * fric * zVec3DInnerProd( &d, &cdv->data.axis[2] );
+      zVecElemNC(_prp(s)->c,offset  ) = zVecElemNC(_prp(s)->b,offset  ) + k        * zVec3DInnerProd( &d, &cdv->data.axis[0] );
+      zVecElemNC(_prp(s)->c,offset+1) = zVecElemNC(_prp(s)->b,offset+1) + k * fric * zVec3DInnerProd( &d, &cdv->data.axis[1] );
+      zVecElemNC(_prp(s)->c,offset+2) = zVecElemNC(_prp(s)->b,offset+2) + k * fric * zVec3DInnerProd( &d, &cdv->data.axis[2] );
       offset += 3;
     }
   }
@@ -240,14 +240,14 @@ zVec _rkFDSolveerQPASMInit(rkFDSolver *s, zVec ans)
 
   zVecClear( ans );
   for( i=0; i<_prp(s)->colnum; i++ )
-    zVecElem(ans,3*i) = 1.0;
+    zVecElemNC(ans,3*i) = 1.0;
   return ans;
 }
 
 double _rkFDSolverQPASMCond(zMat a, zVec ans, int i, void *util)
 {
   int n = i / ( rkFDPrpPyramid(((rkFDSolver *)util)->fdprp) );
-  return zVec3DInnerProd( (zVec3D *)&zMatElem(a,i,3*n), (zVec3D *)&zVecElem(ans,3*n) );
+  return zVec3DInnerProd( (zVec3D *)&zMatElemNC(a,i,3*n), (zVec3D *)&zVecElemNC(ans,3*n) );
 }
 
 /* wapper of ASM */
@@ -275,9 +275,9 @@ void _rkFDSolverQP(rkFDSolver *s)
 
   rkFDCDForEachRigidPair( s->cd, pd ){
     zListForEach( &(*pd)->vlist, cdv ){
-      zMatElem(_prp(s)->q,offset  ,offset  ) += rkContactInfoL((*pd)->ci);
-      zMatElem(_prp(s)->q,offset+1,offset+1) += rkContactInfoL((*pd)->ci);
-      zMatElem(_prp(s)->q,offset+2,offset+2) += rkContactInfoL((*pd)->ci);
+      zMatElemNC(_prp(s)->q,offset  ,offset  ) += rkContactInfoL((*pd)->ci);
+      zMatElemNC(_prp(s)->q,offset+1,offset+1) += rkContactInfoL((*pd)->ci);
+      zMatElemNC(_prp(s)->q,offset+2,offset+2) += rkContactInfoL((*pd)->ci);
       offset += 3;
     }
   }
@@ -304,14 +304,14 @@ void _rkFDSolverSetForce(rkFDSolver *s, bool doUpRef)
       offset = 3 * cnt;
       ioffset = cnum * cnt;
       for( i=0; i<3; i++ )
-        zVec3DCatDRC( &cdv->data.f, zVecElem(_prp(s)->f,offset+i), &cdv->data.axis[i] );
+        zVec3DCatDRC( &cdv->data.f, zVecElemNC(_prp(s)->f,offset+i), &cdv->data.axis[i] );
       rkFDContactForcePushWrench( *pd, cdv );
 
       /* update friction type */
       if( doUpRef ){
         flag = false;
         for( i=0; i<cnum; i++ ){
-          if( zIndexElem(_prp(s)->idx,ioffset+i) ){
+          if( zIndexElemNC(_prp(s)->idx,ioffset+i) ){
             flag = true;
             break;
           }

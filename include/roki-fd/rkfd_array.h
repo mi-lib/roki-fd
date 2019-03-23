@@ -9,6 +9,6 @@
 #define __RKFD_ARRAY_H__
 
 #define rkFDArrayForEach(c,p) \
-  for( (p)=zArrayBuf(c); (p) - zArrayBuf(c) < zArrayNum(c); (p)++ )
+  for( (p)=zArrayBuf(c); (p) - zArrayBuf(c) < zArraySize(c); (p)++ )
 
 #endif /* __RKFD_ARRAY_H__ */
