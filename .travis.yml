@@ -1,0 +1,32 @@
+language: c
+sudo: false
+addons:
+  apt:
+    packages:
+      - git
+before_script:
+  - mkdir -p ~/usr/include
+  - mkdir -p ~/usr/bin
+  - mkdir -p ~/usr/lib
+  - export PATH=$PATH:~/usr/bin
+  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/usr/lib
+  - git clone https://github.com/zhidao/zeda.git
+  - cd zeda && make &&  make install PREFIX=~/usr
+  - cd ../
+  - git clone https://github.com/zhidao/zm.git
+  - cd zm
+  - mkdir -p lib
+  - make &&  make install PREFIX=~/usr
+  - cd ../
+  - git clone https://github.com/zhidao/zeo.git
+  - cd zeo
+  - mkdir -p lib
+  - make &&  make install PREFIX=~/usr
+  - cd ../
+  - git clone https://github.com/zhidao/roki.git
+  - cd roki
+  - mkdir -p lib
+  - make &&  make install PREFIX=~/usr
+  - cd ../
+script:
+  - make
