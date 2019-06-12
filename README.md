@@ -1,6 +1,10 @@
 RoKi-FD - Robot Simulation library  
 Copyright (C) 2018 Tomomichi Sugihara (Zhidao)
 
+| *master* | *develop* |
+|----------|-----------|
+| [![Build Status](https://travis-ci.org/n-wakisaka/roki-fd.svg?branch=master)](https://travis-ci.org/n-wakisaka/roki-fd) | [![Build Status](https://travis-ci.org/n-wakisaka/roki-fd.svg?branch=develop)](https://travis-ci.org/n-wakisaka/roki-fd)
+
 # What is this?
 
 RoKiFD is a software library for robot forward dynamics simulation including:
