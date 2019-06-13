@@ -5,7 +5,7 @@ LIBDIR=$(ROOTDIR)/lib
 INCLUDE=-I$(ROOTDIR)/include -I$(PREFIX)/include
 
 CC=gcc
-CFLAGS=-ansi -Wall -fPIC -O3 $(INCLUDE) -funroll-loops
+CFLAGS=-ansi -Wall -Werror -fPIC -O3 $(INCLUDE) -funroll-loops
 LD=gcc
 LDFLAGS=-shared
 SIGNUP=echo "Roki-FD ver."$(VERSION)" Copyright (C) 2018 Tomomichi Sugihara (Zhidao)" >>
