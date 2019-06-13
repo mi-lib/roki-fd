@@ -176,7 +176,7 @@ rkFDCellDat *_rkFDCellDatJointRefInit(rkFDCellDat *ld)
 
 rkFDCellDat *_rkFDCellDatInit(rkFDCellDat *ld)
 {
-  rkChainABIInit( rkFDCellDatChain(ld) );
+  rkChainABIAlloc( rkFDCellDatChain(ld) );
   ld->_dis.size = ld->_vel.size = ld->_acc.size = rkChainJointSize( rkFDCellDatChain(ld) );
   ld->_dis.buf = NULL;
   ld->_vel.buf = NULL;
