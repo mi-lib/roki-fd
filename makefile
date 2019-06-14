@@ -11,6 +11,7 @@ TESTDIR:=$(ROOTDIR)/test
 SAMPLEDIR:=$(ROOTDIR)/example
 
 CHKDEP=`which zeda-chkdep`
+LIBFILE=`grep DLIB= $(SRCDIR)/makefile | cut -d = -f2`
 
 all:
 	@$(CHKDEP) $(DEPENDENCY) || exit 1
@@ -37,11 +38,8 @@ install:
 	@cd $(APPDIR); make install
 uninstall:
 	@echo " UNINSTALL	library"
-	-@rm -f $(addprefix $(PREFIX)/lib/, $(notdir $(wildcard $(LIBDIR)/*.so)))
+	-@rm -f $(PREFIX)/lib/$(LIBFILE)
 	@echo " UNINSTALL	header files"
-	-@rm -f $(addprefix $(PREFIX)/include/$(PROJNAME)/, $(notdir $(wildcard $(INCDIR)/*.h)))
-	@if [ -d $(PREFIX)/include/$(PROJNAME) ]; then\
-		rmdir --ignore-fail-on-non-empty $(PREFIX)/include/$(PROJNAME);\
-	fi
+	-@rm -f -r $(PREFIX)/include/$(PROJNAME)/
 	@echo " UNINSTALL	applications"
 	@cd $(APPDIR); make uninstall
