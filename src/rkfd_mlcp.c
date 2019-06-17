@@ -89,7 +89,7 @@ void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec a)
         (*pd)->cell[1]->data.chain != cpd->cell[0]->data.chain &&
         (*pd)->cell[1]->data.chain != cpd->cell[1]->data.chain ){
       zListForEach( &(*pd)->vlist, cdv ){
-        zVec3DClear( (zVec3D *)&zVecElemNC(a,offset) );
+        zVec3DZero( (zVec3D *)&zVecElemNC(a,offset) );
         offset += 3;
       }
     } else {
@@ -110,7 +110,7 @@ void _rkFDSolverRelationAccForceOne(rkFDSolver *s, rkCDPairDat *cpd, rkCDVert *c
   for( j=0; j<2; j++ ){
     rkWrenchInit( _prp(s)->w[j] );
     if( cpd->cell[j]->data.type == RK_CD_CELL_STAT ) continue;
-    zXfer3DInv( rkLinkWldFrame(cpd->cell[j]->data.link), cdv->data.vert, rkWrenchPos(_prp(s)->w[j]) );
+    zXform3DInv( rkLinkWldFrame(cpd->cell[j]->data.link), cdv->data.vert, rkWrenchPos(_prp(s)->w[j]) );
     zMulMat3DTVec3D( rkLinkWldAtt(cpd->cell[j]->data.link), axis, rkWrenchForce(_prp(s)->w[j]) );
     if( cpd->cell[j] != cdv->data.cell )
       zVec3DRevDRC( rkWrenchForce(_prp(s)->w[j]) );
@@ -204,7 +204,7 @@ void _rkFDSolverMLCP(rkFDSolver *s)
   register int i;
 
   /* MLCP */
-  zVecClear( _prp(s)->f );
+  zVecZero( _prp(s)->f );
   while( cnt < rkFDPrpMaxIter(s->fdprp) ){
     /* norm */
     offset = 0;
@@ -269,7 +269,7 @@ void _rkFDSolverSetForce(rkFDSolver *s, bool doUpRef)
   rkFDCDForEachRigidPair( s->cd, pd ){
     if( (*pd)->cell[0]->data.type == RK_CD_CELL_STAT && (*pd)->cell[1]->data.type == RK_CD_CELL_STAT ) continue;
     zListForEach( &(*pd)->vlist, cdv ){
-      zVec3DClear( &cdv->data.f );
+      zVec3DZero( &cdv->data.f );
       for( i=0; i<3; i++ )
         zVec3DCatDRC( &cdv->data.f, zVecElemNC(_prp(s)->f,offset+i), &cdv->data.axis[i] );
       rkFDContactForcePushWrench( *pd, cdv );

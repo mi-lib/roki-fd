@@ -532,7 +532,7 @@ void _rkFDUpdateAll(rkFD *fd, double t, bool doUpRef)
 
 zVec _rkFDUpdate(double t, zVec dis, zVec vel, void *fd, zVec acc)
 {
-  zVecClear( acc );
+  zVecZero( acc );
   _rkFDConnectJointState( fd, dis, vel, acc );
   _rkFDUpdateAll( fd, t, false );
   _rkFDUpdateAcc( fd, false );
@@ -541,7 +541,7 @@ zVec _rkFDUpdate(double t, zVec dis, zVec vel, void *fd, zVec acc)
 
 void _rkFDUpdateRef(rkFD *fd)
 {
-  zVecClear( fd->acc );
+  zVecZero( fd->acc );
   _rkFDConnectJointState( fd, fd->dis, fd->vel, fd->acc );
   _rkFDUpdateAll( fd, rkFDTime(fd), true );
   _rkFDUpdateAcc( fd, true );
