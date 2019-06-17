@@ -68,7 +68,7 @@ __EXPORT void rkFDUpdateFKRate(rkFD *fd);
 
 __EXPORT void rkFDChainSetDis(rkFDCell *lc, zVec dis);
 __EXPORT void rkFDChainSetVel(rkFDCell *lc, zVec vel);
-__EXPORT bool rkFDContactInfoReadFile(rkFD *fd, char filename[]);
+__EXPORT bool rkFDContactInfoScanFile(rkFD *fd, char filename[]);
 
 /* for a fake-crawler */
 __EXPORT void rkFDCDCellSetSlideMode(rkCDCell *cell, bool mode);
@@ -99,7 +99,7 @@ __EXPORT void rkFDUpdateDestroy(rkFD *fd);
 #define rkFDSolveContact(f,b) (f)->_solve_contact(f,b)
 
 /* for debug */
-__EXPORT void rkFDWrite(rkFD *fd);
+__EXPORT void rkFDPrint(rkFD *fd);
 
 __END_DECLS
 
