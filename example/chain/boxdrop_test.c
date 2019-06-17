@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
   /* zRandInit(); */
   rkFDCreate( &fd );
-	rkFDContactInfoReadFile( &fd, "../model/contactinfo.ztk" );
+	rkFDContactInfoScanFile( &fd, "../model/contactinfo.ztk" );
 
   n = argc > 1 ? atoi( argv[1] ) : N;
   if( n > NMAX ) n = NMAX;
@@ -55,10 +55,11 @@ int main(int argc, char *argv[])
     for( i=0; i<n; i++ ){
       rkChainGetJointDisAll( rkFDCellChain(cell[i]), dis[i] );
       fprintf( fp[i], "%f ", rkFDDT(&fd) );
-      zVecFWrite( fp[i], dis[i] );
+      zVecFPrint( fp[i], dis[i] );
     }
   }
   rkFDUpdateDestroy( &fd );
+
 
   for( i=0; i<n; i++ ){
     zVecFree( dis[i] );
