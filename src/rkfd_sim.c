@@ -226,7 +226,7 @@ rkFDCell *rkFDChainRegFile(rkFD *fd, char filename[])
   rkFDCell *lc;
 
   lc = zAlloc( rkFDCell, 1 );
-  if( !rkChainReadFile( rkFDCellChain(lc), filename ) ){
+  if( !rkChainScanFile( rkFDCellChain(lc), filename ) ){
     _rkFDCellDatFree( &lc->data );
     zFree( lc );
     return NULL;
@@ -256,12 +256,12 @@ bool rkFDChainUnreg(rkFD *fd, rkFDCell *cell)
 
 /******************************************************************************/
 /* read contact information */
-bool rkFDContactInfoReadFile(rkFD *fd, char filename[]){
+bool rkFDContactInfoScanFile(rkFD *fd, char filename[]){
   rkCDPair *cdp;
 
   if( zArraySize(&fd->ci) != 0)
     rkContactInfoPoolDestroy( &fd->ci );
-  if( !rkContactInfoPoolReadFile( &fd->ci, filename ) ) return false;
+  if( !rkContactInfoPoolScanFile( &fd->ci, filename ) ) return false;
   /* set contact info */
   zListForEach( &rkFDCDBase(&fd->cd)->plist, cdp ){
     cdp->data.ci = rkContactInfoPoolAssoc( &fd->ci, rkLinkStuff(cdp->data.cell[0]->data.link),
@@ -584,10 +584,10 @@ rkFD *rkFDSolve(rkFD *fd)
 
 /******************************************************************************/
 /* for debug */
-void rkFDWrite(rkFD *fd)
+void rkFDPrint(rkFD *fd)
 {
   rkFDCell *lc;
 
   zListForEach( &fd->list, lc )
-    rkChainWrite( rkFDCellChain(lc) );
+    rkChainPrint( rkFDCellChain(lc) );
 }
