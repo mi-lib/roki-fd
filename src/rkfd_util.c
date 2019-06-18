@@ -25,7 +25,7 @@ void rkFDLinkAddSlideVel(rkCDCell *cell, zVec3D *p, zVec3D *n, zVec3D *v)
   zVec3DOuterProd( &sv, &tmpv, &sv );
   zVec3DCatDRC( &sv, -zVec3DInnerProd( &sv, n ), n );
   if( zIsTiny( zVec3DNorm( &sv ) ) ){
-    zVec3DClear( &sv );
+    zVec3DZero( &sv );
   }else{
     zVec3DMulDRC( &sv, cell->data.slide_vel/zVec3DNorm( &sv ) );
   }
@@ -39,7 +39,7 @@ zVec3D *rkFDChainPointRelativeVel(rkCDPairDat *pd, zVec3D *p, zVec3D *n, rkCDCel
 
   for( i=0; i<2; i++ ){
     if( pd->cell[i]->data.type == RK_CD_CELL_STAT )
-      zVec3DClear( &vv[i] );
+      zVec3DZero( &vv[i] );
     else
       rkFDLinkPointWldVel( pd->cell[i]->data.link, p, &vv[i] );
     if( pd->cell[i]->data.slide_mode )
@@ -70,7 +70,7 @@ zVec6D *rkFDChainPointRelativeVel6D(rkCDPairDat *pd, zVec3D *p, zVec3D *n, zVec6
 
   for( i=0; i<2; i++ ){
     if( pd->cell[i]->data.type == RK_CD_CELL_STAT )
-      zVec6DClear( &vv[i] );
+      zVec6DZero( &vv[i] );
     else
       rkFDLinkPointWldVel6D( pd->cell[i]->data.link, p, &vv[i] );
     /* NOTE: this version of the volume-based method does not support slide-mode */
@@ -100,7 +100,7 @@ zVec3D *rkFDChainPointRelativeAcc(rkCDPairDat *pd, zVec3D *p, rkCDCell *cell, zV
 
   for( i=0; i<2; i++ )
     if( pd->cell[i]->data.type == RK_CD_CELL_STAT )
-      zVec3DClear( &av[i] );
+      zVec3DZero( &av[i] );
     else
       rkFDLinkPointWldAcc( pd->cell[i]->data.link, p, &av[i] );
   if( pd->cell[0] == cell )
@@ -129,7 +129,7 @@ zVec6D *rkFDChainPointRelativeAcc6D(rkCDPairDat *pd, zVec3D *p, zVec6D *a)
 
   for( i=0; i<2; i++ )
     if( pd->cell[i]->data.type == RK_CD_CELL_STAT )
-      zVec6DClear( &av[i] );
+      zVec6DZero( &av[i] );
     else{
       rkFDLinkPointWldAcc6D( pd->cell[i]->data.link, p, &av[i] );
     }
@@ -264,7 +264,7 @@ void rkFDContactForcePushWrench(rkCDPairDat *pd, rkCDVert *cdv)
   for( i=0; i<2; i++){
     w = zAlloc( rkWrench, 1 );
     rkWrenchInit( w );
-    zXfer3DInv( rkLinkWldFrame(pd->cell[i]->data.link), cdv->data.vert, rkWrenchPos(w) );
+    zXform3DInv( rkLinkWldFrame(pd->cell[i]->data.link), cdv->data.vert, rkWrenchPos(w) );
     zMulMat3DTVec3D( rkLinkWldAtt(pd->cell[i]->data.link), &cdv->data.f, rkWrenchForce(w) );
     if( pd->cell[i] != cdv->data.cell )
       zVec3DRevDRC( rkWrenchForce(w) );

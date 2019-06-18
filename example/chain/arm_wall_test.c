@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
   fp[1] = fopen( "wall.zvs", "w" );
 
   rkFDCreate( &fd );
-	rkFDContactInfoReadFile( &fd, "../model/contactinfo.ztk" );
+	rkFDContactInfoScanFile( &fd, "../model/contactinfo.ztk" );
 
   cell[0] = rkFDChainRegFile( &fd, "../model/arm_2DoF.ztk" );
   cell[1] = rkFDChainRegFile( &fd, "../model/wall.ztk" );
@@ -67,10 +67,10 @@ int main(int argc, char *argv[])
     rkFDUpdate( &fd );
     rkChainGetJointDisAll( rkFDCellChain(cell[0]), dis[0] );
     fprintf( fp[0], "%f ", rkFDDT(&fd) );
-    zVecFWrite( fp[0], dis[0] );
+    zVecFPrint( fp[0], dis[0] );
     rkChainGetJointDisAll( rkFDCellChain(cell[1]), dis[1] );
     fprintf( fp[1], "%f ", rkFDDT(&fd) );
-    zVecFWrite( fp[1], dis[1] );
+    zVecFPrint( fp[1], dis[1] );
   }
   rkFDUpdateDestroy( &fd );
 

@@ -50,7 +50,7 @@ bool _rkFDSolverPrpReAlloc(rkFDSolver *s){
       zIndexFree( _prp(s)->idx );
       return false;
     }
-    zVecClear( _prp(s)->d );
+    zVecZero( _prp(s)->d );
   } else {
     zMatSetSize( _prp(s)->a, fnum, fnum );
     zVecSetSize( _prp(s)->b, fnum );
@@ -76,7 +76,7 @@ void _rkFDSolverFrictionConstraint(rkFDSolver *s){
   double fric;
 
   cnum = rkFDPrpPyramid(s->fdprp);
-  zMatClear( _prp(s)->nf );
+  zMatZero( _prp(s)->nf );
   rkFDCDForEachRigidPair( s->cd, pd ){
     zListForEach( &(*pd)->vlist, cdv ){
       offset  = 3 * cnt;
@@ -133,7 +133,7 @@ void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec a)
         (*pd)->cell[1]->data.chain != cpd->cell[0]->data.chain &&
         (*pd)->cell[1]->data.chain != cpd->cell[1]->data.chain ){
       for( i=0; i<zListNum(&(*pd)->vlist); i++ ){
-        zVec3DClear( (zVec3D *)&zVecElemNC(a,offset) );
+        zVec3DZero( (zVec3D *)&zVecElemNC(a,offset) );
         offset += 3;
       }
     } else {
@@ -164,7 +164,7 @@ void _rkFDSolverRelationAccForce(rkFDSolver *s)
         for( j=0; j<2; j++ ){
           rkWrenchInit( _prp(s)->w[j] );
           if( (*pd)->cell[j]->data.type == RK_CD_CELL_STAT ) continue;
-          zXfer3DInv( rkLinkWldFrame((*pd)->cell[j]->data.link), cdv->data.vert, rkWrenchPos(_prp(s)->w[j]) );
+          zXform3DInv( rkLinkWldFrame((*pd)->cell[j]->data.link), cdv->data.vert, rkWrenchPos(_prp(s)->w[j]) );
           zMulMat3DTVec3D( rkLinkWldAtt((*pd)->cell[j]->data.link), &cdv->data.axis[i], rkWrenchForce(_prp(s)->w[j]) );
           if( (*pd)->cell[j] != cdv->data.cell )
             zVec3DRevDRC( rkWrenchForce(_prp(s)->w[j]) );
@@ -238,7 +238,7 @@ zVec _rkFDSolveerQPASMInit(rkFDSolver *s, zVec ans)
 {
   register int i;
 
-  zVecClear( ans );
+  zVecZero( ans );
   for( i=0; i<_prp(s)->colnum; i++ )
     zVecElemNC(ans,3*i) = 1.0;
   return ans;
@@ -300,7 +300,7 @@ void _rkFDSolverSetForce(rkFDSolver *s, bool doUpRef)
   cnum = rkFDPrpPyramid(s->fdprp);
   rkFDCDForEachRigidPair( s->cd, pd ){
     zListForEach( &(*pd)->vlist, cdv ){
-      zVec3DClear( &cdv->data.f );
+      zVec3DZero( &cdv->data.f );
       offset = 3 * cnt;
       ioffset = cnum * cnt;
       for( i=0; i<3; i++ )
