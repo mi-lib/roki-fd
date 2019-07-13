@@ -1,0 +1,10 @@
+lib/*.so
+src/*.o
+config
+app/*
+!app/*.c
+!app/makefile
+example/*/*
+!example/model/
+!example/*/*.c
+!example/*/makefile

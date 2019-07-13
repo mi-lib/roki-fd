@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  roki-fd:
+    image: roki-fd
+    command: /bin/bash
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
