@@ -2,8 +2,9 @@ version: '3'
 
 services:
   roki-fd:
+    build: .
     image: roki-fd
-    command: /bin/bash
+    command: /bin/bash -c "cd roki-fd/example/chain && make arm_box_test && ./arm_box_test && rk_anim ../model/arm_2DoF.ztk arm.zvs ../model/box.ztk box.zvs -env ../model/floor.ztk"
     environment:
       - DISPLAY=${DISPLAY}
     volumes:

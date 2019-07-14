@@ -23,16 +23,16 @@ RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/*
 
 # Create user
-RUN groupadd --gid 1000 rokifd && \
-    useradd  --uid 1000 --gid 1000 --groups sudo --create-home --shell /bin/bash rokifd && \
-    echo 'rokifd:rokifd-passwd' | chpasswd
+RUN groupadd --gid 1000 developer && \
+    useradd  --uid 1000 --gid 1000 --groups sudo --create-home --shell /bin/bash developer && \
+    echo 'developer:developer-pass' | chpasswd
 
-USER rokifd
-WORKDIR /home/rokifd
+USER developer
+WORKDIR /home/developer
 
 RUN mkdir -p ./usr/bin ./usr/lib ./usr/include
-ENV PATH $PATH:/home/rokifd/usr/bin
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/home/rokifd/usr/lib
+ENV PATH $PATH:/home/developer/usr/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/home/developer/usr/lib
 
 # library
 RUN mkdir -p milib
@@ -62,6 +62,8 @@ WORKDIR ../
 
 # roki-fd
 RUN mkdir roki-fd
-COPY --chown=rokifd:rokifd . ./roki-fd
+COPY --chown=developer:developer . ./roki-fd
 
 RUN cd roki-fd && make && make install
+
+CMD /bin/bash
