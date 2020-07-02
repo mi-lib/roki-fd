@@ -1,8 +1,8 @@
-/* RoKi - Robot Kinetics library
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
- * rk_fd - forward dynamics computation
- * contributer: 2014-2015 Naoki Wakisaka
+ * rkfd_sim - forward dynamics simulation
+ * additional contributer: 2014- Naoki Wakisaka
  */
 
 /* ********************************************************** */
@@ -60,7 +60,7 @@ void rkFDDestroy(rkFD *fd)
   rkFDSolverDestroy( &fd->solver );
   zVecFreeAO( 3, fd->dis, fd->vel, fd->acc );
   rkFDCDDestroy( &fd->cd );
-  rkContactInfoPoolDestroy( &fd->ci );
+  rkContactInfoArrayDestroy( &fd->ci );
   while( !zListIsEmpty( &fd->list ) ){
     zListDeleteHead( &fd->list, &lc );
     _rkFDCellDatFree( &lc->data );
@@ -72,8 +72,8 @@ void rkFDDestroy(rkFD *fd)
 void _rkFDCellDatSetOffset(rkFD *fd, rkFDCellDat *ld, int offset)
 {
   ld->_offset = offset;
-  zVecBuf(&ld->_dis) = &zVecElemNC(fd->dis,offset);
-  zVecBuf(&ld->_vel) = &zVecElemNC(fd->vel,offset);
+  zVecBufNC(&ld->_dis) = &zVecElemNC(fd->dis,offset);
+  zVecBufNC(&ld->_vel) = &zVecElemNC(fd->vel,offset);
 }
 
 bool _rkFDAllocJointStatePush(rkFD *fd, rkFDCell *rlc)
@@ -96,8 +96,8 @@ bool _rkFDAllocJointStatePush(rkFD *fd, rkFDCell *rlc)
   }
 
   if( fd->size ){
-    zRawVecCopy( zVecBuf(pdis), zVecBuf(fd->dis), fd->size );
-    zRawVecCopy( zVecBuf(pvel), zVecBuf(fd->vel), fd->size );
+    zRawVecCopy( zVecBufNC(pdis), zVecBufNC(fd->dis), fd->size );
+    zRawVecCopy( zVecBufNC(pvel), zVecBufNC(fd->vel), fd->size );
     zVecFreeAO( 2, pdis, pvel );
   }
 
@@ -154,22 +154,22 @@ bool _rkFDAllocJointStatePop(rkFD *fd, rkFDCell *rlc)
   return true;
 }
 
-rkFDCellDat *_rkFDCellDatJointRefInit(rkFDCellDat *ld)
+rkFDCellDat *_rkFDCellDatJointFrictionPivotInit(rkFDCellDat *ld)
 {
   register int i, j;
   rkJoint *joint;
   double val[6];
-  rkJointRef jref[6];
+  rkJointFrictionPivot jfp[6];
 
-  for( i=0; i<rkChainNum(rkFDCellDatChain(ld)); i++ ){
+  for( i=0; i<rkChainLinkNum(rkFDCellDatChain(ld)); i++ ){
     joint = rkChainLinkJoint(&ld->fc.chain,i);
     rkJointGetDis( joint, val );
     for( j=0; j<rkJointSize(joint); j++ ){
-      jref[j].ref_dis = val[j];
-      jref[j].ref_trq = 0.0;
-      jref[j].type = RK_CONTACT_SF;
+      jfp[j].ref_dis = val[j];
+      jfp[j].prev_trq = 0.0;
+      jfp[j].type = RK_CONTACT_SF;
     }
-    rkJointSetRef( joint, jref );
+    rkJointSetFrictionPivot( joint, jfp );
   }
   return ld;
 }
@@ -181,7 +181,7 @@ rkFDCellDat *_rkFDCellDatInit(rkFDCellDat *ld)
   ld->_dis.buf = NULL;
   ld->_vel.buf = NULL;
   ld->_acc.buf = NULL;
-  _rkFDCellDatJointRefInit( ld );
+  _rkFDCellDatJointFrictionPivotInit( ld );
   return ld;
 }
 
@@ -199,8 +199,8 @@ rkFDCell *_rkFDCellPush(rkFD *fd, rkFDCell *lc)
   /* set contact info */
   zListForEach( &rkFDCDBase(&fd->cd)->plist, cdp ){
     if( cdp->data.ci == NULL ){
-      cdp->data.ci = rkContactInfoPoolAssoc( &fd->ci, rkLinkStuff(cdp->data.cell[0]->data.link),
-                                                      rkLinkStuff(cdp->data.cell[1]->data.link) );
+      cdp->data.ci = rkContactInfoArrayAssoc( &fd->ci, rkLinkStuff(cdp->data.cell[0]->data.link),
+                                                       rkLinkStuff(cdp->data.cell[1]->data.link) );
       if( cdp->data.ci == NULL )
         cdp->data.ci = &fd->cidef;
     }
@@ -226,7 +226,7 @@ rkFDCell *rkFDChainRegFile(rkFD *fd, char filename[])
   rkFDCell *lc;
 
   lc = zAlloc( rkFDCell, 1 );
-  if( !rkChainScanFile( rkFDCellChain(lc), filename ) ){
+  if( !rkChainReadZTK( rkFDCellChain(lc), filename ) ){
     _rkFDCellDatFree( &lc->data );
     zFree( lc );
     return NULL;
@@ -260,12 +260,12 @@ bool rkFDContactInfoScanFile(rkFD *fd, char filename[]){
   rkCDPair *cdp;
 
   if( zArraySize(&fd->ci) != 0)
-    rkContactInfoPoolDestroy( &fd->ci );
-  if( !rkContactInfoPoolScanFile( &fd->ci, filename ) ) return false;
+    rkContactInfoArrayDestroy( &fd->ci );
+  if( !rkContactInfoArrayReadZTK( &fd->ci, filename ) ) return false;
   /* set contact info */
   zListForEach( &rkFDCDBase(&fd->cd)->plist, cdp ){
-    cdp->data.ci = rkContactInfoPoolAssoc( &fd->ci, rkLinkStuff(cdp->data.cell[0]->data.link),
-                                                    rkLinkStuff(cdp->data.cell[1]->data.link) );
+    cdp->data.ci = rkContactInfoArrayAssoc( &fd->ci, rkLinkStuff(cdp->data.cell[0]->data.link),
+                                                     rkLinkStuff(cdp->data.cell[1]->data.link) );
     if( cdp->data.ci == NULL )
       cdp->data.ci = &fd->cidef;
   }
@@ -476,8 +476,8 @@ bool _rkFDUpdateInitSolver(rkFD *fd)
   rkFDCell *lc;
   register int i;
 
-  if( zListNum(&fd->list) != 0 ){
-    zArrayAlloc( rkFDSolverChains(&fd->solver), rkFDChain*, zListNum(&fd->list) );
+  if( zListSize(&fd->list) != 0 ){
+    zArrayAlloc( rkFDSolverChains(&fd->solver), rkFDChain*, zListSize(&fd->list) );
     if( zArraySize(rkFDSolverChains(&fd->solver)) == 0 ){
       ZALLOCERROR();
       return false;
@@ -545,7 +545,7 @@ void _rkFDUpdateRef(rkFD *fd)
   _rkFDConnectJointState( fd, fd->dis, fd->vel, fd->acc );
   _rkFDUpdateAll( fd, rkFDTime(fd), true );
   _rkFDUpdateAcc( fd, true );
-  rkFDSolverUpdateRefWithAcc( &fd->solver );
+  rkFDSolverUpdatePrevDrivingTrq( &fd->solver );
 }
 
 /* public update function */
@@ -589,5 +589,5 @@ void rkFDPrint(rkFD *fd)
   rkFDCell *lc;
 
   zListForEach( &fd->list, lc )
-    rkChainPrint( rkFDCellChain(lc) );
+    rkChainFPrintZTK( stdout, rkFDCellChain(lc) );
 }

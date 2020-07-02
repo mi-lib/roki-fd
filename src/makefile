@@ -8,9 +8,15 @@ CC=gcc
 CFLAGS=-ansi -Wall -Werror -fPIC -O3 $(INCLUDE) -funroll-loops
 LD=gcc
 LDFLAGS=-shared
-SIGNUP=echo "Roki-FD ver."$(VERSION)" Copyright (C) 2018 Tomomichi Sugihara (Zhidao)" >>
+SIGNUP=echo "RoKi-FD ver."$(VERSION)" Copyright (C) 2018 Tomomichi Sugihara (Zhidao)" >>
 
-OBJ=rkfd_sim.o rkfd_util.o rkfd_cd.o rkfd_penalty.o rkfd_property.o rkfd_solver.o rkfd_vert.o rkfd_volume.o rkfd_mlcp.o
+OBJ=rkfd_property.o\
+	rkfd_cd.o\
+	rkfd_solver.o\
+	rkfd_util.o\
+	rkfd_sim.o\
+	rkfd_penalty.o\
+	rkfd_vert.o rkfd_volume.o rkfd_mlcp.o
 DLIB=librokifd.so
 
 TARGET=$(DLIB)

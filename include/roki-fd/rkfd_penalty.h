@@ -1,8 +1,8 @@
-/* RoKiFD - Robot Forward Dynamics library
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
- * rkfd_penalty -
- * contributer: 2014-2018 Naoki Wakisaka
+ * rkfd_penalty - contact force computation based on penalty method
+ * additional contributer: 2014- Naoki Wakisaka
  */
 
 #ifndef __RKFD_PENALTY_H__

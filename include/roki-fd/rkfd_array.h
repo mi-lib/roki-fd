@@ -1,8 +1,8 @@
-/* RoKiFD - Robot Forward Dynamics library
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
- * rkfd_array -
- * contributer: 2014-2018 Naoki Wakisaka
+ * rkfd_array - utility for array manipulation
+ * additional contributer: 2014- Naoki Wakisaka
  */
 
 #ifndef __RKFD_ARRAY_H__

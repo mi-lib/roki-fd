@@ -1,8 +1,8 @@
-/* RoKiFD - Robot Forward Dynamics library
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
  * rkfd_cd - collision detection class
- * contributer: 2014-2018 Naoki Wakisaka
+ * additional contributer: 2014- Naoki Wakisaka
  */
 
 #include <roki-fd/rkfd_cd.h>
@@ -19,12 +19,12 @@ void rkFDCDDestroy(rkFDCD *cd)
   rkCDDestroy( &cd->cd );
 }
 
-bool rkFDCDUpdateInit(rkFDCD *cd){
-  if( zListNum( &cd->cd.plist ) == 0 )
-    return true;
+bool rkFDCDUpdateInit(rkFDCD *cd)
+{
+  if( zListSize( &cd->cd.plist ) == 0 ) return true;
 
-  zArrayAlloc( &cd->elast_pairs, rkCDPairDat*, zListNum( &cd->cd.plist ) );
-  zArrayAlloc( &cd->rigid_pairs, rkCDPairDat*, zListNum( &cd->cd.plist ) );
+  zArrayAlloc( &cd->elast_pairs, rkCDPairDat*, zListSize( &cd->cd.plist ) );
+  zArrayAlloc( &cd->rigid_pairs, rkCDPairDat*, zListSize( &cd->cd.plist ) );
   if( zArraySize( &cd->elast_pairs ) == 0 || zArraySize( &cd->rigid_pairs ) == 0 )
     return false;
   return true;
@@ -53,4 +53,3 @@ void rkFDCDUpdateDestroy(rkFDCD *cd)
   zArrayFree( &cd->elast_pairs );
   zArrayFree( &cd->rigid_pairs );
 }
-
