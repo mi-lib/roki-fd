@@ -1,31 +1,35 @@
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
+ * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
+ *
+ * rkfd_volume - volumetric contact model
+ * additional contributer: 2014- Naoki Wakisaka
+ */
+
 #include <roki-fd/rkfd_util.h>
 #include <roki-fd/rkfd_volume.h>
 #include <roki-fd/rkfd_penalty.h>
 
 /* ************************************************************************** */
-/* the forward dynamics based on contact volume
+/* the forward dynamics based on volumetric contact
  * ************************************************************************** */
 #define _prp(s) ( (rkFDSolverPrpVolume* )((s)->prp) )
 #define _zMat6DElem(m,i,j)  (m)->e[(i)/3][(j)/3].e[(j)%3][(i)%3]
 /* #define _zMat6DElem(m,i,j)  (m)->e[(j)/3][(i)/3].e[(j)%3][(i)%3] */
 
 /* count rigid contact vertics */
-static void _rkFDSolverCountContacts(rkFDSolver *s);
-void _rkFDSolverCountContacts(rkFDSolver *s)
+static void _rkFDSolverCountContacts(rkFDSolver *s)
 {
   rkCDPairDat **pd;
 
   _prp(s)->colnum = 0;
   rkFDCDForEachRigidPair( s->cd, pd )
-    _prp(s)->colnum += zListNum(&(*pd)->cplane);
+    _prp(s)->colnum += zListSize(&(*pd)->cplane);
 }
 
 /* reallocate workspace */
-static bool _rkFDSolverPrpReAllocQP(rkFDSolver *s);
-static bool _rkFDSolverPrpReAllocQPCondition(rkFDSolver *s);
-static bool _rkFDSolverPrpReAllocModification(rkFDSolver *s);
 
-bool _rkFDSolverPrpReAllocQP(rkFDSolver *s){
+static bool _rkFDSolverPrpReAllocQP(rkFDSolver *s)
+{
   int fnum = 6*rkFDCDRigidNum(s->cd);
 
   if( _prp(s)->fsize < fnum ){
@@ -39,7 +43,6 @@ bool _rkFDSolverPrpReAllocQP(rkFDSolver *s){
     _prp(s)->q = zMatAllocSqr( fnum );
     _prp(s)->c = zVecAlloc( fnum );
     _prp(s)->f = zVecAlloc( fnum );
-
     if( !_prp(s)->a || !_prp(s)->q || !_prp(s)->b || !_prp(s)->t || !_prp(s)->c || !_prp(s)->f ){
       zMatFreeAO( 2, _prp(s)->a, _prp(s)->q );
       zVecFreeAO( 4, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->f );
@@ -56,7 +59,7 @@ bool _rkFDSolverPrpReAllocQP(rkFDSolver *s){
   return true;
 }
 
-bool _rkFDSolverPrpReAllocQPCondition(rkFDSolver *s)
+static bool _rkFDSolverPrpReAllocQPCondition(rkFDSolver *s)
 {
   int fnum = 6*rkFDCDRigidNum(s->cd);
   int cnum = rkFDCDRigidNum(s->cd) + _prp(s)->colnum;
@@ -76,7 +79,6 @@ bool _rkFDSolverPrpReAllocQPCondition(rkFDSolver *s)
     _prp(s)->csize = cnum;
     _prp(s)->d   = zVecAlloc( cnum );
     _prp(s)->idx = zIndexCreate( cnum );
-
     if( !_prp(s)->d || !_prp(s)->idx ){
       zVecFree( _prp(s)->d );
       zIndexFree( _prp(s)->idx );
@@ -88,13 +90,13 @@ bool _rkFDSolverPrpReAllocQPCondition(rkFDSolver *s)
   return true;
 }
 
-bool _rkFDSolverPrpReAllocModification(rkFDSolver *s)
+static bool _rkFDSolverPrpReAllocModification(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   int pvnum = 0;
 
   rkFDCDForEachRigidPair( s->cd, pd )
-    pvnum = zMax( pvnum, zListNum(&(*pd)->cplane) );
+    pvnum = zMax( pvnum, zListSize(&(*pd)->cplane) );
 
   if( _prp(s)->pvsize < pvnum ){
     zMatFree( _prp(s)->ma );
@@ -103,7 +105,6 @@ bool _rkFDSolverPrpReAllocModification(rkFDSolver *s)
     _prp(s)->ma = zMatAlloc( 6, rkFDPrpPyramid(s->fdprp) * pvnum );
     _prp(s)->mc = zVecAlloc( pvnum );
     _prp(s)->mf = zVecAlloc( rkFDPrpPyramid(s->fdprp) * pvnum );
-
     if( !_prp(s)->ma || !_prp(s)->mc || !_prp(s)->mf ){
       zMatFree( _prp(s)->ma );
       zVecFreeAO( 2, _prp(s)->mc, _prp(s)->mf );
@@ -114,8 +115,8 @@ bool _rkFDSolverPrpReAllocModification(rkFDSolver *s)
 }
 
 /* friction constraint */
-static void _rkFDSolverFrictionConstraint(rkFDSolver *s);
-void _rkFDSolverFrictionConstraint(rkFDSolver *s){
+static void _rkFDSolverFrictionConstraint(rkFDSolver *s)
+{
   rkCDPairDat **pd;
   rkCDPlane *cdpl;
   int ioffset = 0, joffset = 0;
@@ -135,10 +136,8 @@ void _rkFDSolverFrictionConstraint(rkFDSolver *s){
 
 /* ************************************************************************** */
 /* relation between acc and force */
-static void _rkFDSolverBiasAcc(rkFDSolver *s, zVec acc);
-static void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec a);
-static void _rkFDSolverRelationAccForce(rkFDSolver *s);
-void _rkFDSolverBiasAcc(rkFDSolver *s, zVec acc)
+
+static void _rkFDSolverBiasAcc(rkFDSolver *s, zVec acc)
 {
   rkCDPairDat **pd;
   int offset = 0;
@@ -151,7 +150,7 @@ void _rkFDSolverBiasAcc(rkFDSolver *s, zVec acc)
   }
 }
 
-void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec a)
+static void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec a)
 {
   rkCDPairDat **pd;
   int offset = 0;
@@ -171,7 +170,7 @@ void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec a)
   }
 }
 
-void _rkFDSolverRelationAccForce(rkFDSolver *s)
+static void _rkFDSolverRelationAccForce(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   register int i, j;
@@ -198,11 +197,9 @@ void _rkFDSolverRelationAccForce(rkFDSolver *s)
         if( j != 0 )
           zVec6DRevDRC( rkWrenchW(_prp(s)->w[j]) );
       }
-
       rkFDChainUpdateAccAddExForceTwo( *pd, _prp(s)->w );
       _rkFDSolverRelativeAcc( s, *pd, _prp(s)->b, _prp(s)->t );
       zMatPutCol( _prp(s)->a, offset+i, _prp(s)->t );
-
       /* restore ABIPrp */
       rkFDChainABIPopPrpExForceTwo( *pd );
     }
@@ -211,8 +208,7 @@ void _rkFDSolverRelationAccForce(rkFDSolver *s)
 }
 
 /* bias velocity */
-static void _rkFDSolverBiasVel(rkFDSolver *s);
-void _rkFDSolverBiasVel(rkFDSolver *s)
+static void _rkFDSolverBiasVel(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   int offset = 0;
@@ -227,22 +223,10 @@ void _rkFDSolverBiasVel(rkFDSolver *s)
 }
 
 /* ************************************************************************** */
-/* constraint with each contact volume */
-/* TODO: some functions must be converted to macro functions */
-static void _rkFDSolverConstraintMidDepth(double h[], rkContactInfo *ci, double s, double hm[], double *hc);
-static void _rkFDSolverConstraintMidPoint(zVec3D p[], zVec3D pm[]);
-static void _rkFDSolverConstraintAvePoint(zVec3D p[], double s, zVec3D *pc);
-static void _rkFDSolverConstraintAveMat(zMat3D m[], double s, zMat3D *mc);
-static double _rkFDSolverConstrainArea(zVec3D p[]);
-static void _rkFDSolverConstraintAddQ(zVec3D p[], zVec3D pm[], double s, zMat6D *q);
-static void _rkFDSolverConstraintDepth(zVec3D pm[], double h[], rkContactInfo *ci, double s, zVec3D norm, zVec6D *c);
-static void _rkFDSolverConstraintSignDepth(double h[], int *st, int stp[]);
-static void _rkFDSolverConstraintInnerPoint(zVec3D *p1, zVec3D *p2, double h1, double h2, zVec3D *pp);
-static void _rkFDSolverSetContactPlane(rkCDPairDat *cpd, zVec3D *p, zVec3D *norm);
-static int __rk_fd_plane_cmp(void *p1, void *p2, void *priv);
-static void _rkFDSolverConstraint(rkCDPairDat *cpd, zMat6D *q, zVec6D *c);
+/* constraint on each contact volume */
+/* TODO: some functions should be converted to macros */
 
-void _rkFDSolverConstraintMidDepth(double h[], rkContactInfo *ci, double s, double hm[], double *hc)
+static void _rkFDSolverConstraintMidDepth(double h[], rkContactInfo *ci, double s, double hm[], double *hc)
 {
   double k;
 
@@ -253,14 +237,14 @@ void _rkFDSolverConstraintMidDepth(double h[], rkContactInfo *ci, double s, doub
   *hc   = k * ( h[0] + h[1] + h[2] ) * 2;
 }
 
-void _rkFDSolverConstraintMidPoint(zVec3D p[], zVec3D pm[])
+static void _rkFDSolverConstraintMidPoint(zVec3D p[], zVec3D pm[])
 {
   zVec3DMid( &p[0], &p[1], &pm[0] );
   zVec3DMid( &p[1], &p[2], &pm[1] );
   zVec3DMid( &p[2], &p[0], &pm[2] );
 }
 
-void _rkFDSolverConstraintAvePoint(zVec3D p[], double s, zVec3D *pc)
+static void _rkFDSolverConstraintAvePoint(zVec3D p[], double s, zVec3D *pc)
 {
   double k;
 
@@ -270,7 +254,7 @@ void _rkFDSolverConstraintAvePoint(zVec3D p[], double s, zVec3D *pc)
   _zVec3DMulDRC( pc, k );
 }
 
-void _rkFDSolverConstraintAveMat(zMat3D m[], double s, zMat3D *mc)
+static void _rkFDSolverConstraintAveMat(zMat3D m[], double s, zMat3D *mc)
 {
   double k;
 
@@ -278,10 +262,9 @@ void _rkFDSolverConstraintAveMat(zMat3D m[], double s, zMat3D *mc)
   _zMat3DAdd( &m[0], &m[1], mc );
   _zMat3DAddDRC( mc, &m[2] );
   _zMat3DMulDRC( mc, k );
-
 }
 
-double _rkFDSolverConstrainArea(zVec3D p[])
+static double _rkFDSolverConstrainArea(zVec3D p[])
 {
   zVec3D e1, e2;
 
@@ -290,7 +273,7 @@ double _rkFDSolverConstrainArea(zVec3D p[])
   return 0.5 * zVec3DOuterProdNorm( &e1, &e2 );
 }
 
-void _rkFDSolverConstraintAddQ(zVec3D p[], zVec3D pm[], double s, zMat6D *q)
+static void _rkFDSolverConstraintAddQ(zVec3D p[], zVec3D pm[], double s, zMat6D *q)
 {
   register int i;
   zVec3D pc;
@@ -307,7 +290,7 @@ void _rkFDSolverConstraintAddQ(zVec3D p[], zVec3D pm[], double s, zMat6D *q)
   zMat3DSubDRC( &q->e[1][1], &tmpm );
 }
 
-void _rkFDSolverConstraintDepth(zVec3D pm[], double h[], rkContactInfo *ci, double s, zVec3D norm, zVec6D *c)
+static void _rkFDSolverConstraintDepth(zVec3D pm[], double h[], rkContactInfo *ci, double s, zVec3D norm, zVec6D *c)
 {
   register int i;
   double hm[3], hc;
@@ -323,7 +306,7 @@ void _rkFDSolverConstraintDepth(zVec3D pm[], double h[], rkContactInfo *ci, doub
   }
 }
 
-void _rkFDSolverConstraintSignDepth(double h[], int *st, int stp[])
+static void _rkFDSolverConstraintSignDepth(double h[], int *st, int stp[])
 {
   register int i;
 
@@ -342,7 +325,7 @@ void _rkFDSolverConstraintSignDepth(double h[], int *st, int stp[])
   }
 }
 
-void _rkFDSolverConstraintInnerPoint(zVec3D *p1, zVec3D *p2, double h1, double h2, zVec3D *pp)
+static void _rkFDSolverConstraintInnerPoint(zVec3D *p1, zVec3D *p2, double h1, double h2, zVec3D *pp)
 {
   /* for safety */
   if( zIsTiny( h1 ) ){
@@ -361,7 +344,7 @@ void _rkFDSolverConstraintInnerPoint(zVec3D *p1, zVec3D *p2, double h1, double h
   zVec3DCatDRC( pp, h1/(h1 - h2), p2 );
 }
 
-void _rkFDSolverSetContactPlane(rkCDPairDat *cpd, zVec3D *p, zVec3D *norm)
+static void _rkFDSolverSetContactPlane(rkCDPairDat *cpd, zVec3D *p, zVec3D *norm)
 {
   rkCDPlane *cdpl, *cdpl2;
   zVec3D tmpv;
@@ -387,7 +370,7 @@ void _rkFDSolverSetContactPlane(rkCDPairDat *cpd, zVec3D *p, zVec3D *norm)
   zListInsertHead( &cpd->cplane, cdpl );
 }
 
-int __rk_fd_plane_cmp(void *p1, void *p2, void *priv)
+static int __rk_fd_plane_cmp(void *p1, void *p2, void *priv)
 {
   zVec3D *a, *n, tmp;
   double th1, th2;
@@ -408,7 +391,7 @@ int __rk_fd_plane_cmp(void *p1, void *p2, void *priv)
   return th1 > th2 ? 1: -1;
 }
 
-void _rkFDSolverConstraint(rkCDPairDat *cpd, zMat6D *q, zVec6D *c)
+static void _rkFDSolverConstraint(rkCDPairDat *cpd, zMat6D *q, zVec6D *c)
 {
   register int i, j;
   zTri3D *face;
@@ -506,11 +489,8 @@ void _rkFDSolverConstraint(rkCDPairDat *cpd, zMat6D *q, zVec6D *c)
 
 /* ************************************************************************** */
 /* solve QP */
-static void _rkFDSolverQPCreate(rkFDSolver *s);
-static zVec _rkFDSolverQPInit(zMat a, zVec b, zVec ans, void *util);
-static void _rkFDSolverQP(rkFDSolver *s);
 
-void _rkFDSolverQPCreate(rkFDSolver *s)
+static void _rkFDSolverQPCreate(rkFDSolver *s)
 {
   zMat6D qv;
   zVec6D cv, tmpv;
@@ -544,7 +524,8 @@ void _rkFDSolverQPCreate(rkFDSolver *s)
   }
 }
 
-zVec _rkFDSolverQPInit(zMat a, zVec b, zVec ans, void *util){
+static zVec _rkFDSolverQPInit(zMat a, zVec b, zVec ans, void *util)
+{
   rkCDPairDat **pd;
   int offset = 0;
 
@@ -557,7 +538,7 @@ zVec _rkFDSolverQPInit(zMat a, zVec b, zVec ans, void *util){
   return ans;
 }
 
-void _rkFDSolverQP(rkFDSolver *s)
+static void _rkFDSolverQP(rkFDSolver *s)
 {
   zQPSolveASM( _prp(s)->q, _prp(s)->c, _prp(s)->nf, _prp(s)->d, _prp(s)->f, NULL, _rkFDSolverQPInit, s );
   zVecDivDRC( _prp(s)->f, rkFDPrpDT(s->fdprp) );
@@ -565,14 +546,13 @@ void _rkFDSolverQP(rkFDSolver *s)
 
 /* ************************************************************************** */
 /* set force to rkCDPair */
-static void _rkFDSolverSetForce(rkFDSolver *s);
-void _rkFDSolverSetForce(rkFDSolver *s)
+static void _rkFDSolverSetForce(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   int offset =  0;
 
   rkFDCDForEachRigidPair( s->cd, pd ){
-    if( zListNum(&(*pd)->cplane) == 0 ){
+    if( zListSize(&(*pd)->cplane) == 0 ){
       zVec6DZero( &(*pd)->f );
       continue;
     }
@@ -586,17 +566,15 @@ void _rkFDSolverSetForce(rkFDSolver *s)
 
 /* ************************************************************************** */
 /* normal conditions */
-static void _rkFDSolverModifyNormForceCenterTrq(rkCDPairDat *cpd, zVec3D *r, double fn);
-static void _rkFDSolverModifyNormalForceCenter(rkFDSolver *solver);
 
-void _rkFDSolverModifyNormForceCenterTrq(rkCDPairDat *cpd, zVec3D *r, double fn)
+static void _rkFDSolverModifyNormForceCenterTrq(rkCDPairDat *cpd, zVec3D *r, double fn)
 {
   zVec3DMul( &cpd->norm, zVec3DInnerProd( &cpd->norm, zVec6DAng(&cpd->f) ), zVec6DAng(&cpd->f) );
   zVec3DCatDRC( zVec6DAng(&cpd->f),  fn * zVec3DInnerProd( &cpd->axis[2], r ), &cpd->axis[1] );
   zVec3DCatDRC( zVec6DAng(&cpd->f), -fn * zVec3DInnerProd( &cpd->axis[1], r ), &cpd->axis[2] );
 }
 
-void _rkFDSolverModifyNormalForceCenter(rkFDSolver *solver)
+static void _rkFDSolverModifyNormalForceCenter(rkFDSolver *solver)
 {
   rkCDPairDat **pd;
   rkCDPlane *cdpl[4];
@@ -656,22 +634,19 @@ void _rkFDSolverModifyNormalForceCenter(rkFDSolver *solver)
  * in that case, the solution does not meet the constraints with respect to normal force.
  * before the friction modification, the solution is projected inside the constraints with a small margin.
  */
-/* static friction */
-static void _rkFDSolverModifyWrenchStaticSetSize(rkFDSolver *s, rkCDPairDat *cpd);
-static void _rkFDSolverModifyWrenchStaticConstraint(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w);
-static bool _rkFDSolverModifyWrenchStatic(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w);
-static void _rkFDSolverModifyWrenchSetStatic(rkCDPairDat *cpd, bool doUpRef);
 
-void _rkFDSolverModifyWrenchStaticSetSize(rkFDSolver *s, rkCDPairDat *cpd)
+/* static friction */
+
+static void _rkFDSolverModifyWrenchStaticSetSize(rkFDSolver *s, rkCDPairDat *cpd)
 {
-  int fnum = rkFDPrpPyramid(s->fdprp) * zListNum(&cpd->cplane);
+  int fnum = rkFDPrpPyramid(s->fdprp) * zListSize(&cpd->cplane);
 
   zMatSetSize( _prp(s)->ma, 6, fnum );
   zVecSetSize( _prp(s)->mb, 6 );
   zVecSetSize( _prp(s)->mf, fnum );
 }
 
-void _rkFDSolverModifyWrenchStaticConstraint(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
+static void _rkFDSolverModifyWrenchStaticConstraint(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
 {
   rkCDPlane *cdpl;
   register int i;
@@ -680,8 +655,8 @@ void _rkFDSolverModifyWrenchStaticConstraint(rkFDSolver *s, rkCDPairDat *cpd, zV
   zListForEach( &cpd->cplane, cdpl ){
     for( i=0; i<rkFDPrpPyramid(s->fdprp); i++ ){
       zMatElemNC(_prp(s)->ma,0,offset+i) = 1.0;
-      zMatElemNC(_prp(s)->ma,1,offset+i) = cdpl->data.r[1];
-      zMatElemNC(_prp(s)->ma,2,offset+i) = -cdpl->data.r[0];
+      zMatElemNC(_prp(s)->ma,1,offset+i) = cdpl->data.r.c.y;
+      zMatElemNC(_prp(s)->ma,2,offset+i) =-cdpl->data.r.c.x;
       zMatElemNC(_prp(s)->ma,3,offset+i) = rkContactInfoSF(cpd->ci)*zVecElemNC(_prp(s)->sc_table[1],i);
       zMatElemNC(_prp(s)->ma,4,offset+i) = rkContactInfoSF(cpd->ci)*zVecElemNC(_prp(s)->sc_table[0],i);
       zMatElemNC(_prp(s)->ma,5,offset+i) = -(zMatElemNC(_prp(s)->ma,2,offset+i)*zMatElemNC(_prp(s)->ma,4,offset+i) + zMatElemNC(_prp(s)->ma,1,offset+i)*zMatElemNC(_prp(s)->ma,3,offset+i));
@@ -696,7 +671,7 @@ void _rkFDSolverModifyWrenchStaticConstraint(rkFDSolver *s, rkCDPairDat *cpd, zV
   zVecElemNC(_prp(s)->mb,5) = w->e[3];
 }
 
-bool _rkFDSolverModifyWrenchStatic(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
+static bool _rkFDSolverModifyWrenchStatic(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
 {
   bool ret;
 
@@ -706,12 +681,11 @@ bool _rkFDSolverModifyWrenchStatic(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
   zEchoOff();
   ret = zLPFeasibleBase( _prp(s)->ma, _prp(s)->mb, _prp(s)->mf );
   zEchoOn();
-
   return ret;
 }
 
 /* if this function's overhead is large, this function should be expanded */
-void _rkFDSolverModifyWrenchSetStatic(rkCDPairDat *cpd, bool doUpRef)
+static void _rkFDSolverModifyWrenchSetStatic(rkCDPairDat *cpd, bool doUpRef)
 {
   if( doUpRef ){
     cpd->type = RK_CONTACT_SF;
@@ -719,32 +693,23 @@ void _rkFDSolverModifyWrenchSetStatic(rkCDPairDat *cpd, bool doUpRef)
 }
 
 /* kinetic friction */
-static void _rkFDSolverPlaneVertPos(rkCDPairDat *cpd, double *tl);
-static void _rkFDSolverModifyWrenchKineticCenter(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w);
-static void _rkFDSolverModifyWrenchKineticSetSize(rkFDSolver *s, rkCDPairDat *cpd);
-static void _rkFDSolverModifyWrenchKineticConstraint(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w);
-static void _rkFDSolverPlaneVertSlideDir(rkFDSolver *s, rkCDPairDat *cpd, rkCDPlane *cdpl);
-static void _rkFDSolverModifyWrenchKineticEvalFunc(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w);
-static void _rkFDSolverModifyWrenchKineticEvalFuncSafaty(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w);
-static void _rkFDSolverModifyWrenchKineticTotalWrench(rkCDPairDat *cpd, zVec f, zVec6D *w);
-static void _rkFDSolverModifyWrenchKinetic(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w);
-static void _rkFDSolverModifyWrenchSetKinetic(rkCDPairDat *cpd, bool doUpRef);
 
-void _rkFDSolverPlaneVertPos(rkCDPairDat *cpd, double *tl)
+static void _rkFDSolverPlaneVertPos(rkCDPairDat *cpd, double *tl)
 {
   rkCDPlane *cdpl;
   double rl;
 
   *tl = 0.0;
   zListForEach( &cpd->cplane, cdpl ){
-    cdpl->data.r[0] = zVec3DInnerProd( &cdpl->data.v, &cpd->axis[1] );
-    cdpl->data.r[1] = zVec3DInnerProd( &cdpl->data.v, &cpd->axis[2] );
-    if( *tl < (rl = zVec2DNorm( cdpl->data.r )) )
+    _zVec2DCreate( &cdpl->data.r,
+      zVec3DInnerProd( &cdpl->data.v, &cpd->axis[1] ),
+      zVec3DInnerProd( &cdpl->data.v, &cpd->axis[2] ) );
+    if( *tl < ( rl = zVec2DNorm( &cdpl->data.r )) )
       *tl = rl;
   }
 }
 
-void _rkFDSolverModifyWrenchKineticCenter(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
+static void _rkFDSolverModifyWrenchKineticCenter(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
 {
   zVec3D v;
   double nv, tmpd;
@@ -756,15 +721,15 @@ void _rkFDSolverModifyWrenchKineticCenter(rkFDSolver *s, rkCDPairDat *cpd, zVec6
     w->e[1] = 0.0;
     w->e[2] = 0.0;
   } else {
-    tmpd = rkFDKineticFrictionWeight( rkFDPrpFricWeight(s->fdprp), nv ) * rkContactInfoKF(cpd->ci) * w->e[0] / nv;
+    tmpd = rkFDKineticFrictionWeight( rkFDPrpFrictionWeight(s->fdprp), nv ) * rkContactInfoKF(cpd->ci) * w->e[0] / nv;
     w->e[1] = -tmpd * zVec3DInnerProd( &v, &cpd->axis[1] );
     w->e[2] = -tmpd * zVec3DInnerProd( &v, &cpd->axis[2] );
   }
 }
 
-void _rkFDSolverModifyWrenchKineticSetSize(rkFDSolver *s, rkCDPairDat *cpd)
+static void _rkFDSolverModifyWrenchKineticSetSize(rkFDSolver *s, rkCDPairDat *cpd)
 {
-  int fnum = zListNum(&cpd->cplane);
+  int fnum = zListSize(&cpd->cplane);
 
   zMatSetSize( _prp(s)->ma, 3, fnum );
   zVecSetSize( _prp(s)->mb, 3 );
@@ -772,15 +737,15 @@ void _rkFDSolverModifyWrenchKineticSetSize(rkFDSolver *s, rkCDPairDat *cpd)
   zVecSetSize( _prp(s)->mf, fnum );
 }
 
-void _rkFDSolverModifyWrenchKineticConstraint(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
+static void _rkFDSolverModifyWrenchKineticConstraint(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
 {
   rkCDPlane *cdpl;
   int offset = 0;
 
   zListForEach( &cpd->cplane, cdpl ){
     zMatElemNC(_prp(s)->ma,0,offset) = 1.0;
-    zMatElemNC(_prp(s)->ma,1,offset) = cdpl->data.r[1];
-    zMatElemNC(_prp(s)->ma,2,offset) = -cdpl->data.r[0];
+    zMatElemNC(_prp(s)->ma,1,offset) = cdpl->data.r.c.y;
+    zMatElemNC(_prp(s)->ma,2,offset) =-cdpl->data.r.c.x;
     offset++;
   }
   zVecElemNC(_prp(s)->mb,0) = w->e[0];
@@ -788,7 +753,7 @@ void _rkFDSolverModifyWrenchKineticConstraint(rkFDSolver *s, rkCDPairDat *cpd, z
   zVecElemNC(_prp(s)->mb,2) = w->e[5];
 }
 
-void _rkFDSolverPlaneVertSlideDir(rkFDSolver *s, rkCDPairDat *cpd, rkCDPlane *cdpl)
+static void _rkFDSolverPlaneVertSlideDir(rkFDSolver *s, rkCDPairDat *cpd, rkCDPlane *cdpl)
 {
   zVec3D p, v;
   double nv, w;
@@ -798,16 +763,16 @@ void _rkFDSolverPlaneVertSlideDir(rkFDSolver *s, rkCDPairDat *cpd, rkCDPlane *cd
   zVec3DCatDRC( &v, -zVec3DInnerProd( &cpd->norm, &v ), &cpd->norm );
   nv = zVec3DNorm( &v );
   if( zIsTiny( nv ) ){
-    cdpl->data.s[0] = 0.0;
-    cdpl->data.s[1] = 0.0;
+    zVec2DZero( &cdpl->data.s );
   } else {
-    w = rkFDKineticFrictionWeight( rkFDPrpFricWeight(s->fdprp), nv ) * rkContactInfoKF(cpd->ci) / nv;
-    cdpl->data.s[0] = -w * zVec3DInnerProd( &v, &cpd->axis[1] );
-    cdpl->data.s[1] = -w * zVec3DInnerProd( &v, &cpd->axis[2] );
+    w = rkFDKineticFrictionWeight( rkFDPrpFrictionWeight(s->fdprp), nv ) * rkContactInfoKF(cpd->ci) / nv;
+    _zVec2DCreate( &cdpl->data.s,
+      -w * zVec3DInnerProd( &v, &cpd->axis[1] ),
+      -w * zVec3DInnerProd( &v, &cpd->axis[2] ) );
   }
 }
 
-void _rkFDSolverModifyWrenchKineticEvalFunc(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
+static void _rkFDSolverModifyWrenchKineticEvalFunc(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
 {
   rkCDPlane *cdpl;
   register int i;
@@ -815,41 +780,35 @@ void _rkFDSolverModifyWrenchKineticEvalFunc(rkFDSolver *s, rkCDPairDat *cpd, zVe
   double wn[3];
 
   for( i=0; i<3; i++ )
-    if( !zIsTiny( w->e[i+1] ) )
-      wn[i] = 1.0 / w->e[i+1];
-    else
-      wn[i] = 0.0;
+    wn[i] = zIsTiny( w->e[i+1] ) ? 0.0 : 1.0 / w->e[i+1];
   zListForEach( &cpd->cplane, cdpl ){
     _rkFDSolverPlaneVertSlideDir( s, cpd, cdpl );
-    zVecElemNC(_prp(s)->mc,offset) = -wn[0] * cdpl->data.s[0] - wn[1] * cdpl->data.s[1] -
-      wn[2] * ( cdpl->data.r[0] * cdpl->data.s[1] - cdpl->data.r[1] * cdpl->data.s[0] );
+    zVecElemNC(_prp(s)->mc,offset) = -wn[0] * cdpl->data.s.c.x - wn[1] * cdpl->data.s.c.y -
+      wn[2] * _zVec2DOuterProd( &cdpl->data.r, &cdpl->data.s );
     offset++;
   }
 }
 
-void _rkFDSolverModifyWrenchKineticEvalFuncSafaty(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
+static void _rkFDSolverModifyWrenchKineticEvalFuncSafety(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
 {
   rkCDPlane *cdpl;
   register int i;
   int offset = 0;
   double wn[2];
 
-  zMatSetSize( _prp(s)->ma, 1, zListNum(&cpd->cplane) );
+  zMatSetSize( _prp(s)->ma, 1, zListSize(&cpd->cplane) );
   zVecSetSize( _prp(s)->mb, 1 );
   for( i=0; i<2; i++ )
-    if( !zIsTiny( w->e[i+3] ) )
-      wn[i] = 1.0 / w->e[i+3];
-    else
-      wn[i] = 0.0;
+    wn[i] = zIsTiny( w->e[i+3] ) ? 0.0 : 1.0 / w->e[i+3];
   offset = 0;
   zListForEach( &cpd->cplane, cdpl ){
     _rkFDSolverPlaneVertSlideDir( s, cpd, cdpl );
-    zVecElemNC(_prp(s)->mc,offset) += wn[0] * cdpl->data.r[0] - wn[1] * cdpl->data.r[1];
+    zVecElemNC(_prp(s)->mc,offset) += wn[0] * cdpl->data.r.c.x - wn[1] * cdpl->data.r.c.y;
     offset++;
   }
 }
 
-void _rkFDSolverModifyWrenchKineticTotalWrench(rkCDPairDat *cpd, zVec f, zVec6D *w)
+static void _rkFDSolverModifyWrenchKineticTotalWrench(rkCDPairDat *cpd, zVec f, zVec6D *w)
 {
   rkCDPlane *cdpl;
   int offset = 0;
@@ -857,15 +816,15 @@ void _rkFDSolverModifyWrenchKineticTotalWrench(rkCDPairDat *cpd, zVec f, zVec6D 
 
   zVec3DZero( (zVec3D *)&w->e[1] );
   zListForEach( &cpd->cplane, cdpl ){
-    zVec2DMul( cdpl->data.s, zVecElemNC(f,offset), fs );
-    w->e[1] += fs[0];
-    w->e[2] += fs[1];
-    w->e[3] += cdpl->data.r[0] * fs[1] - cdpl->data.r[1] * fs[0];
+    zVec2DMul( &cdpl->data.s, zVecElemNC(f,offset), &fs );
+    w->e[1] += fs.c.x;
+    w->e[2] += fs.c.y;
+    w->e[3] += _zVec2DOuterProd( &cdpl->data.r, &fs );
     offset++;
   }
 }
 
-void _rkFDSolverModifyWrenchKinetic(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
+static void _rkFDSolverModifyWrenchKinetic(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
 {
   _rkFDSolverModifyWrenchKineticSetSize( s, cpd );
   _rkFDSolverModifyWrenchKineticConstraint( s, cpd, w );
@@ -873,16 +832,15 @@ void _rkFDSolverModifyWrenchKinetic(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
 
   zEchoOff();
   if( !zLPSolveSimplex( _prp(s)->ma, _prp(s)->mb, _prp(s)->mc, _prp(s)->mf, NULL ) ){
-    _rkFDSolverModifyWrenchKineticEvalFuncSafaty( s, cpd, w );
+    _rkFDSolverModifyWrenchKineticEvalFuncSafety( s, cpd, w );
     zLPSolveSimplex( _prp(s)->ma, _prp(s)->mb, _prp(s)->mc, _prp(s)->mf, NULL );
   }
   zEchoOn();
-
   _rkFDSolverModifyWrenchKineticTotalWrench( cpd, _prp(s)->mf, w );
 }
 
 /* if this function's overhead is large, this function should be expanded */
-void _rkFDSolverModifyWrenchSetKinetic(rkCDPairDat *cpd, bool doUpRef)
+static void _rkFDSolverModifyWrenchSetKinetic(rkCDPairDat *cpd, bool doUpRef)
 {
   if( doUpRef ){
     cpd->type = RK_CONTACT_KF;
@@ -893,10 +851,8 @@ void _rkFDSolverModifyWrenchSetKinetic(rkCDPairDat *cpd, bool doUpRef)
 }
 
 /* modify wrench */
-static void _rkFDSolverModifyWrenchSetForce(rkCDPairDat *cpd, zVec6D *w);
-static void _rkFDSolverModifyWrench(rkFDSolver *s, bool doUpRef);
 
-void _rkFDSolverModifyWrenchSetForce(rkCDPairDat *cpd, zVec6D *w)
+static void _rkFDSolverModifyWrenchSetForce(rkCDPairDat *cpd, zVec6D *w)
 {
   register int i;
 
@@ -907,7 +863,7 @@ void _rkFDSolverModifyWrenchSetForce(rkCDPairDat *cpd, zVec6D *w)
   }
 }
 
-void _rkFDSolverModifyWrench(rkFDSolver *s, bool doUpRef)
+static void _rkFDSolverModifyWrench(rkFDSolver *s, bool doUpRef)
 {
   rkCDPairDat **pd;
   zVec6D w;
@@ -921,7 +877,6 @@ void _rkFDSolverModifyWrench(rkFDSolver *s, bool doUpRef)
       w.e[i  ] = zVec3DInnerProd( zVec6DLin(&(*pd)->f), &(*pd)->axis[i] );
       w.e[i+3] = zVec3DInnerProd( zVec6DAng(&(*pd)->f), &(*pd)->axis[i] );
     }
-
     /* friction */
     fn = w.e[0];
     fs = sqrt( zSqr( w.e[1] ) + zSqr( w.e[2] ) );
@@ -958,8 +913,7 @@ void _rkFDSolverModifyWrench(rkFDSolver *s, bool doUpRef)
 }
 
 /* ************************************************************************** */
-static void _rkFDSolverPushWrench(rkFDSolver *s);
-void _rkFDSolverPushWrench(rkFDSolver *s)
+static void _rkFDSolverPushWrench(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   rkWrench *w;
@@ -979,8 +933,7 @@ void _rkFDSolverPushWrench(rkFDSolver *s)
 }
 
 /* ************************************************************************** */
-static bool _rkFDSolverVolume(rkFDSolver *s, bool doUpRef);
-bool _rkFDSolverVolume(rkFDSolver *s, bool doUpRef)
+static bool _rkFDSolverVolume(rkFDSolver *s, bool doUpRef)
 {
   if( !_rkFDSolverPrpReAllocQP( s ) ) return false;
   _rkFDSolverRelationAccForce( s );
@@ -1012,7 +965,8 @@ void rkFDSolverGetDefaultContactInfo_Volume(rkFDSolver *s, rkContactInfo *ci)
   rkContactInfoSetKF( ci, 0.3 );
 }
 
-bool rkFDSolverUpdateInit_Volume(rkFDSolver *s){
+bool rkFDSolverUpdateInit_Volume(rkFDSolver *s)
+{
   _prp(s)->colnum = 0;
   _prp(s)->a = NULL;
   _prp(s)->b = NULL;
@@ -1042,7 +996,8 @@ bool rkFDSolverUpdateInit_Volume(rkFDSolver *s){
   return rkFDCrateSinCosTable( _prp(s)->sc_table, rkFDPrpPyramid(s->fdprp), 0.0 );
 }
 
-void rkFDSolverColChk_Volume(rkFDSolver *s, bool doUpRef){
+void rkFDSolverColChk_Volume(rkFDSolver *s, bool doUpRef)
+{
   zEchoOff();
   /* rkCDColVolBREP( rkFDCDBase(rkFDSolverCD(s)) ); */
   rkCDColVolBREPVert( rkFDCDBase(rkFDSolverCD(s)) );
@@ -1051,7 +1006,7 @@ void rkFDSolverColChk_Volume(rkFDSolver *s, bool doUpRef){
 
 bool rkFDSolverUpdate_Volume(rkFDSolver *s, bool doUpRef)
 {
-  rkFDJointFriction( rkFDSolverChains(s), rkFDPrpDT(s->fdprp), rkFDPrpFricWeight(s->fdprp), doUpRef );
+  rkFDJointFriction( rkFDSolverChains(s), rkFDPrpDT(s->fdprp), rkFDPrpFrictionWeight(s->fdprp), doUpRef );
   if( rkFDCDElastNum(s->cd) != 0 )
     rkFDSolverPenalty( s, doUpRef );
   if( rkFDCDRigidNum(s->cd) != 0 )
@@ -1059,11 +1014,13 @@ bool rkFDSolverUpdate_Volume(rkFDSolver *s, bool doUpRef)
   return true;
 }
 
-void rkFDSolverUpdateRefWithAcc_Volume(rkFDSolver *s){
-  rkFDUpdateJointRefDrivingTrq( rkFDSolverChains(s) );
+void rkFDSolverUpdatePrevDrivingTrq_Volume(rkFDSolver *s)
+{
+  rkFDUpdateJointPrevDrivingTrq( rkFDSolverChains(s) );
 }
 
-void rkFDSolverUpdateDestroy_Volume(rkFDSolver *s){
+void rkFDSolverUpdateDestroy_Volume(rkFDSolver *s)
+{
   zMatFreeAO( 3, _prp(s)->a, _prp(s)->q, _prp(s)->nf );
   zVecFreeAO( 7, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->d, _prp(s)->f, _prp(s)->sc_table[0], _prp(s)->sc_table[1] );
   zFree( _prp(s)->w[0] );
@@ -1078,4 +1035,3 @@ RKFD_SOLVER_DEFAULT_GENERATOR( Volume )
 
 #undef _zMat6DElem
 #undef _prp
-

@@ -1,8 +1,8 @@
-/* RoKiFD - Robot Forward Dynamics library
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
- * rkfd_mlcp -
- * contributer: 2014-2018 Naoki Wakisaka
+ * rkfd_mlcp - LCP based formulation with Projected Gauss Seidel method.
+ * additional contributer: 2014- Naoki Wakisaka
  */
 
 #ifndef __RKFD_MLCP_H__
@@ -24,8 +24,8 @@ typedef struct{
   rkWrench *w[2];
 } rkFDSolverPrpMLCP;
 
- RKFD_SOLVER_FUNCTION_DEFAULT( MLCP )
- RKFD_SOLVER_CREATE_DEFAULT( MLCP )
+RKFD_SOLVER_FUNCTION_DEFAULT( MLCP )
+RKFD_SOLVER_CREATE_DEFAULT( MLCP )
 
 __END_DECLS
 

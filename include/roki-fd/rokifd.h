@@ -1,6 +1,6 @@
-/* RoKiFD - Robot Forward Dynamics library
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
- * contributer: 2014-2018 Naoki Wakisaka
+ * additional contributer: 2014- Naoki Wakisaka
  */
 
 /*!

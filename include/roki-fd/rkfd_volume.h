@@ -1,8 +1,8 @@
-/* RoKiFD - Robot Forward Dynamics library
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
- * rkfd_volume -
- * contributer: 2014-2018 Naoki Wakisaka
+ * rkfd_volume - volumetric contact model
+ * additional contributer: 2014- Naoki Wakisaka
  */
 
 #ifndef __RKFD_VOLUME_H__
@@ -33,8 +33,8 @@ typedef struct{
   zVec mb, mc, mf;
 } rkFDSolverPrpVolume;
 
- RKFD_SOLVER_FUNCTION_DEFAULT( Volume )
- RKFD_SOLVER_CREATE_DEFAULT( Volume )
+RKFD_SOLVER_FUNCTION_DEFAULT( Volume )
+RKFD_SOLVER_CREATE_DEFAULT( Volume )
 
 __END_DECLS
 

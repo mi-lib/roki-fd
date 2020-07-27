@@ -1,3 +1,10 @@
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
+ * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
+ *
+ * rkfd_util - utility functions for forward dynamics computation
+ * additional contributer: 2014- Naoki Wakisaka
+ */
+
 #include <roki-fd/rkfd_util.h>
 #include <roki-fd/rkfd_array.h>
 #include <roki/rk_abi.h>
@@ -179,11 +186,12 @@ void rkFDChainExtWrenchDestroy(rkChain *chain)
 {
   register int i;
 
-  for( i=0; i<rkChainNum(chain); i++ )
+  for( i=0; i<rkChainLinkNum(chain); i++ )
     rkWrenchListDestroy( rkLinkExtWrenchBuf(rkChainLink(chain,i)) );
 }
 
-double rkFDKineticFrictionWeight(double w, double fs){
+double rkFDKineticFrictionWeight(double w, double fs)
+{
   return 1.0 - exp( -1.0 * w * fs );
 }
 
@@ -241,7 +249,7 @@ void rkFDContactForceModifyFriction(rkFDPrp *prp, rkCDPairDat *pd, rkCDVert *cdv
     zVec3DMul( &cdv->data.axis[0], fn, &cdv->data.f );
     if( !zIsTiny( vs ) ){
       zVec3DNormalizeNCDRC( &v );
-      zVec3DCatDRC( &cdv->data.f, - rkFDKineticFrictionWeight( rkFDPrpFricWeight(prp), vs ) * rkContactInfoKF(pd->ci) * fn, &v );
+      zVec3DCatDRC( &cdv->data.f, - rkFDKineticFrictionWeight( rkFDPrpFrictionWeight(prp), vs ) * rkContactInfoKF(pd->ci) * fn, &v );
     }
     if( doUpRef ){
       cdv->data.type = RK_CONTACT_KF;
@@ -273,30 +281,30 @@ void rkFDContactForcePushWrench(rkCDPairDat *pd, rkCDVert *cdv)
 }
 
 /******************************************************************************/
-/* computation of the joint references */
+/* computation of the joint friction pivot */
 /* NOTE:
  * this function must be called after the computation of joint accelerations
  */
-void rkFDUpdateJointRefDrivingTrq(rkFDChainArray *chains)
+void rkFDUpdateJointPrevDrivingTrq(rkFDChainArray *chains)
 {
   rkFDChain **fdc;
   rkChain *chain;
   rkJoint *joint;
   register int i, j;
   double val[6], tf[6];
-  rkJointRef jref[6];
+  rkJointFrictionPivot jfp[6];
 
   rkFDArrayForEach( chains, fdc ){
     chain = rkFDChainBase( *fdc );
-    for( i=0; i<rkChainNum(chain); i++ ){
+    for( i=0; i<rkChainLinkNum(chain); i++ ){
       joint = rkChainLinkJoint(chain,i);
-      rkJointGetRef( joint, jref );
-      rkJointGetFric( joint, tf );
+      rkJointGetFrictionPivot( joint, jfp );
+      rkJointGetFriction( joint, tf );
       rkJointMotorDrivingTrq( joint, val );
       for( j=0; j<rkJointSize(joint); j++ ){
-        jref[j].ref_trq = val[j] + tf[j];
+        jfp[j].prev_trq = val[j] + tf[j];
       }
-      rkJointSetRef( joint, jref );
+      rkJointSetFrictionPivot( joint, jfp );
     }
   }
 }
@@ -311,17 +319,17 @@ void rkFDJointFrictionAll(rkJoint *joint, double weight)
   double kf[6], v[6];
   register int i;
 
-  rkJointGetKFric( joint, kf );
+  rkJointGetKFriction( joint, kf );
   rkJointGetVel( joint, v );
   for( i=0; i<rkJointSize(joint); i++ )
     kf[i] *= rkFDKineticFrictionWeight( weight, fabs(v[i]) );
-  rkJointSetFric( joint, kf );
+  rkJointSetFriction( joint, kf );
 }
 
 void rkFDJointFrictionRevolDC(rkJoint *joint, double dt, bool doUpRef)
 {
   double v, val, fmax, tf;
-  rkJointRef jref;
+  rkJointFrictionPivot jfp;
 
   rkJointMotorInertia( joint, &tf );
   rkJointGetVel( joint, &v );
@@ -330,28 +338,28 @@ void rkFDJointFrictionRevolDC(rkJoint *joint, double dt, bool doUpRef)
   tf -= val;
   rkJointMotorRegistance( joint, &val );
   tf += val;
-  rkJointGetRef( joint, &jref );
-  tf += jref.ref_trq;
+  rkJointGetFrictionPivot( joint, &jfp );
+  tf += jfp.prev_trq;
 
-  if( jref.type == RK_CONTACT_SF )
-    rkJointGetSFric( joint, &fmax );
+  if( jfp.type == RK_CONTACT_SF )
+    rkJointGetSFriction( joint, &fmax );
   else
-    rkJointGetKFric( joint, &fmax );
+    rkJointGetKFriction( joint, &fmax );
 
   fmax = fabs(fmax);
   if( fabs( tf ) > fmax ){
     tf = tf > 0 ? fmax: -fmax;
     if( doUpRef ){
-      jref.type = RK_CONTACT_KF;
-      rkJointSetRef( joint, &jref );
+      jfp.type = RK_CONTACT_KF;
+      rkJointSetFrictionPivot( joint, &jfp );
     }
   } else{
     if( doUpRef ){
-      jref.type = RK_CONTACT_SF;
-      rkJointSetRef( joint, &jref );
+      jfp.type = RK_CONTACT_SF;
+      rkJointSetFrictionPivot( joint, &jfp );
     }
   }
-  rkJointSetFric( joint, &tf );
+  rkJointSetFriction( joint, &tf );
 }
 
 void rkFDJointFriction(rkFDChainArray *chains, double dt, double weight, bool doUpRef)
@@ -359,19 +367,21 @@ void rkFDJointFriction(rkFDChainArray *chains, double dt, double weight, bool do
   rkFDChain **fdc;
   rkChain *chain;
   rkJoint *joint;
+  rkMotor *motor;
   register int i;
 
   rkFDArrayForEach( chains, fdc ){
     chain = rkFDChainBase( *fdc );
     if( rkChainJointSize( chain ) == 0 ) continue;
-    for( i=0; i<rkChainNum(chain); i++ ){
+    for( i=0; i<rkChainLinkNum(chain); i++ ){
       joint = rkChainLinkJoint(chain,i);
       /* 1DoF joint and DC motor only */
-      if( rkJointSize(joint) == 1 && rkJointMotorType(joint) == RK_MOTOR_DC )
-        rkFDJointFrictionRevolDC( joint, dt, doUpRef );
-      else
+      if( rkJointSize(joint) == 1 ){
+        motor = rkJointGetMotor( joint );
+        if( motor->com == &rk_motor_dc )
+          rkFDJointFrictionRevolDC( joint, dt, doUpRef );
+      } else
         rkFDJointFrictionAll( joint, weight );
     }
   }
 }
-

@@ -1,10 +1,14 @@
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
+ * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
+ *
+ * rkfd_mlcp - LCP based formulation with Projected Gauss Seidel method.
+ * additional contributer: 2014- Naoki Wakisaka
+ */
+
 #include <roki-fd/rkfd_util.h>
 #include <roki-fd/rkfd_mlcp.h>
 #include <roki-fd/rkfd_penalty.h>
 
-/* LCP based method
- * MLCP is solved by Projected Gauss Seidel method.
- */
 /* ************************************************************************** */
 /* the forward dynamics based on vertex contact
  * ************************************************************************** */
@@ -12,19 +16,18 @@
 
 /**************************************/
 /* rigid contact */
-static void _rkFDSolverContactState(rkFDSolver *s);
-void _rkFDSolverContactState(rkFDSolver *s)
+static void _rkFDSolverContactState(rkFDSolver *s)
 {
   rkCDPairDat **pd;
 
   _prp(s)->colnum = 0;
   rkFDCDForEachRigidPair( s->cd, pd )
-    _prp(s)->colnum += zListNum(&(*pd)->vlist);
+    _prp(s)->colnum += zListSize(&(*pd)->vlist);
 }
 
 /* allocate workspace */
-static bool _rkFDSolverPrpReAlloc(rkFDSolver *s);
-bool _rkFDSolverPrpReAlloc(rkFDSolver *s){
+static bool _rkFDSolverPrpReAlloc(rkFDSolver *s)
+{
   int fnum = 3*_prp(s)->colnum;
 
   if( _prp(s)->size < _prp(s)->colnum ){
@@ -36,13 +39,12 @@ bool _rkFDSolverPrpReAlloc(rkFDSolver *s){
     _prp(s)->b    = zVecAlloc( fnum );
     _prp(s)->t    = zVecAlloc( fnum );
     _prp(s)->f    = zVecAlloc( fnum );
-
     if( !_prp(s)->a || !_prp(s)->b || !_prp(s)->t || !_prp(s)->f ){
-    zMatFree( _prp(s)->a );
-    zVecFreeAO( 3, _prp(s)->b, _prp(s)->t, _prp(s)->f );
+      zMatFree( _prp(s)->a );
+      zVecFreeAO( 3, _prp(s)->b, _prp(s)->t, _prp(s)->f );
       return false;
     }
-  } else {
+  } else{
     zMatSetSize( _prp(s)->a, fnum, fnum );
     zVecSetSize( _prp(s)->b, fnum );
     zVecSetSize( _prp(s)->t, fnum );
@@ -52,12 +54,8 @@ bool _rkFDSolverPrpReAlloc(rkFDSolver *s){
 }
 
 /* relation between acc and force */
-static void _rkFDSolverBiasAcc(rkFDSolver *s, zVec acc);
-static void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec a);
-static void _rkFDSolverRelationAccForceOne(rkFDSolver *s, rkCDPairDat *cpd, rkCDVert *cdv, zVec3D *axis, int offset);
-static void _rkFDSolverRelationAccForce(rkFDSolver *s);
 
-void _rkFDSolverBiasAcc(rkFDSolver *s, zVec acc)
+static void _rkFDSolverBiasAcc(rkFDSolver *s, zVec acc)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
@@ -75,7 +73,7 @@ void _rkFDSolverBiasAcc(rkFDSolver *s, zVec acc)
   }
 }
 
-void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec a)
+static void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec a)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
@@ -103,7 +101,7 @@ void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec a)
   }
 }
 
-void _rkFDSolverRelationAccForceOne(rkFDSolver *s, rkCDPairDat *cpd, rkCDVert *cdv, zVec3D *axis, int offset)
+static void _rkFDSolverRelationAccForceOne(rkFDSolver *s, rkCDPairDat *cpd, rkCDVert *cdv, zVec3D *axis, int offset)
 {
   register int j;
 
@@ -123,7 +121,7 @@ void _rkFDSolverRelationAccForceOne(rkFDSolver *s, rkCDPairDat *cpd, rkCDVert *c
   rkFDChainABIPopPrpExForceTwo( cpd );
 }
 
-void _rkFDSolverRelationAccForce(rkFDSolver *s)
+static void _rkFDSolverRelationAccForce(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
@@ -144,11 +142,8 @@ void _rkFDSolverRelationAccForce(rkFDSolver *s)
 }
 
 /* solve MLCP */
-static void _rkFDSolverBiasVel(rkFDSolver *s);
-static void _rkFDSolvertRelaxationCompensation(rkFDSolver *s);
-static void _rkFDSolverMLCP(rkFDSolver *s);
 
-void _rkFDSolverBiasVel(rkFDSolver *s)
+static void _rkFDSolverBiasVel(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
@@ -166,7 +161,7 @@ void _rkFDSolverBiasVel(rkFDSolver *s)
   }
 }
 
-void _rkFDSolvertRelaxationCompensation(rkFDSolver *s)
+static void _rkFDSolverRelaxationCompensation(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
@@ -182,10 +177,8 @@ void _rkFDSolvertRelaxationCompensation(rkFDSolver *s)
       for( i=0; i<3; i++ )
         zMatElemNC(_prp(s)->a,offset+i,offset+i) += rkContactInfoL((*pd)->ci);
       /* compensation */
-      if( cdv->data.type == RK_CONTACT_SF )
-        k = rkContactInfoSF((*pd)->ci);
-      else
-        k = rkContactInfoKF((*pd)->ci);
+      k = cdv->data.type == RK_CONTACT_SF ?
+        rkContactInfoSF((*pd)->ci) : rkContactInfoKF((*pd)->ci);
       zVecElemNC(_prp(s)->b,offset  ) += rkContactInfoK((*pd)->ci)     * zVec3DInnerProd( &d, &cdv->data.axis[0] );
       zVecElemNC(_prp(s)->b,offset+1) += rkContactInfoK((*pd)->ci) * k * zVec3DInnerProd( &d, &cdv->data.axis[1] );
       zVecElemNC(_prp(s)->b,offset+2) += rkContactInfoK((*pd)->ci) * k * zVec3DInnerProd( &d, &cdv->data.axis[2] );
@@ -194,7 +187,7 @@ void _rkFDSolvertRelaxationCompensation(rkFDSolver *s)
   }
 }
 
-void _rkFDSolverMLCP(rkFDSolver *s)
+static void _rkFDSolverMLCP(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
@@ -232,10 +225,9 @@ void _rkFDSolverMLCP(rkFDSolver *s)
         }
 
         fnorm = zSqr( ff[0] ) + zSqr( ff[1] );
-        if( cdv->data.type == RK_CONTACT_SF )
-          fs = zSqr( rkContactInfoSF((*pd)->ci)*zVecElemNC(_prp(s)->f,offset) );
-        else
-          fs = zSqr( rkContactInfoKF((*pd)->ci)*zVecElemNC(_prp(s)->f,offset) );
+        fs = cdv->data.type == RK_CONTACT_SF ?
+          zSqr( rkContactInfoSF((*pd)->ci)*zVecElemNC(_prp(s)->f,offset) ) :
+          zSqr( rkContactInfoKF((*pd)->ci)*zVecElemNC(_prp(s)->f,offset) );
 
         if( fnorm < zTOL || fs < zTOL ){
           zVecElemNC(_prp(s)->f,offset+1) = 0.0;
@@ -257,8 +249,7 @@ void _rkFDSolverMLCP(rkFDSolver *s)
 }
 
 /* set force */
-static void _rkFDSolverSetForce(rkFDSolver *s, bool doUpRef);
-void _rkFDSolverSetForce(rkFDSolver *s, bool doUpRef)
+static void _rkFDSolverSetForce(rkFDSolver *s, bool doUpRef)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
@@ -277,10 +268,8 @@ void _rkFDSolverSetForce(rkFDSolver *s, bool doUpRef)
       /* update friction type */
       fn = cdv->data.f.e[0];
       fs = sqrt( zSqr( cdv->data.f.e[1] ) + zSqr( cdv->data.f.e[2] ) );
-      if( cdv->data.type == RK_CONTACT_SF )
-        mu = rkContactInfoSF((*pd)->ci);
-      else
-        mu = rkContactInfoKF((*pd)->ci);
+      mu = cdv->data.type == RK_CONTACT_SF ?
+        rkContactInfoSF((*pd)->ci) : rkContactInfoKF((*pd)->ci);
 
       if( fs > mu * fn - zTOL ){
         cdv->data.type = RK_CONTACT_KF;
@@ -289,21 +278,19 @@ void _rkFDSolverSetForce(rkFDSolver *s, bool doUpRef)
         cdv->data.type = RK_CONTACT_SF;
         rkFDUpdateRefSlide( *pd, cdv, rkFDPrpDT(s->fdprp) );
       }
-
       offset += 3;
     }
   }
 }
 
 /*****************************************************************************/
-static bool _rkFDSolverConstraint(rkFDSolver *s, bool doUpRef);
-bool _rkFDSolverConstraint(rkFDSolver *s, bool doUpRef)
+static bool _rkFDSolverConstraint(rkFDSolver *s, bool doUpRef)
 {
   _rkFDSolverContactState( s );
   if( !_rkFDSolverPrpReAlloc( s ) ) return false;
   _rkFDSolverRelationAccForce( s );
   _rkFDSolverBiasVel( s );
-  _rkFDSolvertRelaxationCompensation( s );
+  _rkFDSolverRelaxationCompensation( s );
   _rkFDSolverMLCP( s );
   _rkFDSolverSetForce( s, doUpRef );
   return true;
@@ -322,7 +309,8 @@ void rkFDSolverGetDefaultContactInfo_MLCP(rkFDSolver *s, rkContactInfo *ci)
   rkContactInfoSetL( ci, 1.0 );
 }
 
-bool rkFDSolverUpdateInit_MLCP(rkFDSolver *s){
+bool rkFDSolverUpdateInit_MLCP(rkFDSolver *s)
+{
   _prp(s)->colnum = 0;
   _prp(s)->size = 0;
   _prp(s)->a = NULL;
@@ -336,7 +324,8 @@ bool rkFDSolverUpdateInit_MLCP(rkFDSolver *s){
   return true;
 }
 
-void rkFDSolverColChk_MLCP(rkFDSolver *s, bool doUpRef){
+void rkFDSolverColChk_MLCP(rkFDSolver *s, bool doUpRef)
+{
   zEchoOff();
   /* if( doUpRef ) */
   rkCDColChkVert( rkFDCDBase(rkFDSolverCD(s)) );
@@ -345,7 +334,7 @@ void rkFDSolverColChk_MLCP(rkFDSolver *s, bool doUpRef){
 
 bool rkFDSolverUpdate_MLCP(rkFDSolver *s, bool doUpRef)
 {
-  rkFDJointFriction( rkFDSolverChains(s), rkFDPrpDT(s->fdprp), rkFDPrpFricWeight(s->fdprp), doUpRef );
+  rkFDJointFriction( rkFDSolverChains(s), rkFDPrpDT(s->fdprp), rkFDPrpFrictionWeight(s->fdprp), doUpRef );
   if( rkFDCDElastNum(s->cd) != 0 )
     rkFDSolverPenalty( s, doUpRef );
   if( rkFDCDRigidNum(s->cd) != 0 )
@@ -353,11 +342,13 @@ bool rkFDSolverUpdate_MLCP(rkFDSolver *s, bool doUpRef)
   return true;
 }
 
-void rkFDSolverUpdateRefWithAcc_MLCP(rkFDSolver *s){
-  rkFDUpdateJointRefDrivingTrq( rkFDSolverChains(s) );
+void rkFDSolverUpdatePrevDrivingTrq_MLCP(rkFDSolver *s)
+{
+  rkFDUpdateJointPrevDrivingTrq( rkFDSolverChains(s) );
 }
 
-void rkFDSolverUpdateDestroy_MLCP(rkFDSolver *s){
+void rkFDSolverUpdateDestroy_MLCP(rkFDSolver *s)
+{
   zMatFree( _prp(s)->a );
   zVecFreeAO( 3, _prp(s)->b, _prp(s)->t, _prp(s)->f );
   zFree( _prp(s)->w[0] );
@@ -367,4 +358,3 @@ void rkFDSolverUpdateDestroy_MLCP(rkFDSolver *s){
 RKFD_SOLVER_DEFAULT_GENERATOR( MLCP )
 
 #undef _prp
-

@@ -1,8 +1,8 @@
-/* RoKiFD - Robot Forward Dynamics library
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
  * rkfd_solver - contact force computation solver
- * contributer: 2014-2018 Naoki Wakisaka
+ * additional contributer: 2014- Naoki Wakisaka
  */
 
 #ifndef __RKFD_SOLVER_H__
@@ -56,7 +56,7 @@ __EXPORT void rkFDSolverDestroy(rkFDSolver *solver);
 #define rkFDSolverUpdateInit(s)              (s)->com->_init(s)
 #define rkFDSolverColChk(s,b)                (s)->com->_colchk(s,b)
 #define rkFDSolverUpdate(s,b)                (s)->com->_update(s,b)
-#define rkFDSolverUpdateRefWithAcc(s)        (s)->com->_update_ref(s)
+#define rkFDSolverUpdatePrevDrivingTrq(s)    (s)->com->_update_ref(s)
 #define rkFDSolverUpdateDestroy(s)           (s)->com->_destroy(s)
 
 /* **********************************************************
@@ -77,7 +77,7 @@ __EXPORT void rkFDSolverDestroy(rkFDSolver *solver);
  * bool rkFDSolverUpdateInit_Vert(rkFDSolver *s){...}
  * void rkFDSolverColChk_Vert(rkFDSolver *s, bool doUpRef){...}
  * bool rkFDSolverUpdate_Vert(rkFDSolver *s, bool doUpRef){...}
- * void rkFDSolverUpdateRefWithAcc_Vert(rkFDSolver *s){...}
+ * void rkFDSolverUpdatePrevDrivingTrq_Vert(rkFDSolver *s){...}
  * void rkFDSolverUpdateDestroy_Vert(rkFDSolver *s){...}
  *
  * RKFD_SOLVER_DEFAULT_GENERATOR( Vert )
@@ -87,7 +87,7 @@ __EXPORT void rkFDSolverDestroy(rkFDSolver *solver);
   bool rkFDSolverUpdateInit_##type(rkFDSolver *s);                      \
   void rkFDSolverColChk_##type(rkFDSolver *s, bool doUpRef);            \
   bool rkFDSolverUpdate_##type(rkFDSolver *s, bool doUpRef);            \
-  void rkFDSolverUpdateRefWithAcc_##type(rkFDSolver *s);                \
+  void rkFDSolverUpdatePrevDrivingTrq_##type(rkFDSolver *s);            \
   void rkFDSolverUpdateDestroy_##type(rkFDSolver *s);
 
 #define RKFD_SOLVER_FUNCTION_DEFAULT_INST(type) \
@@ -96,7 +96,7 @@ __EXPORT void rkFDSolverDestroy(rkFDSolver *solver);
     rkFDSolverUpdateInit_##type,                \
     rkFDSolverColChk_##type,                    \
     rkFDSolverUpdate_##type,                    \
-    rkFDSolverUpdateRefWithAcc_##type,          \
+    rkFDSolverUpdatePrevDrivingTrq_##type,      \
     rkFDSolverUpdateDestroy_##type              \
   };
 
