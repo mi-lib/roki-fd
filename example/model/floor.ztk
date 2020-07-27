@@ -3,16 +3,16 @@ name : floor
 
 [optic]
 name: blue
-ambient: 0.1:0.1:0.3
-diffuse: 0.2:0.2:0.4
-specular: 0.1:0.1:0.1
+ambient: 0.1, 0.1, 0.3
+diffuse: 0.2, 0.2, 0.4
+specular: 0.1, 0.1, 0.1
 exp: 1
 shininess: 0
 alpha: 1
 
 [shape]
 type : box
-name : shape
+name : shape_floor
 optic : blue
 center : 0, 0, -0.2
 depth : 5.0
@@ -35,4 +35,4 @@ frame: {
  0, 1, 0, 0
  0, 0, 1, 0
 }
-shape: shape
+shape: shape_floor
