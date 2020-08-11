@@ -2,14 +2,14 @@
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
  * rkfd_sim - forward dynamics simulation
- * additional contributer: 2014- Naoki Wakisaka
+ * contributer: 2014- Naoki Wakisaka
  */
 
 /* ********************************************************** */
 /* CLASS: rkFD
    forward dynamics class
  * ********************************************************** */
-#include <roki-fd/rokifd.h>
+#include <roki-fd/roki-fd.h>
 #include <roki-fd/rkfd_util.h>
 #include <roki/rk_abi.h>
 

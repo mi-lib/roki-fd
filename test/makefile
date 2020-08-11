@@ -1,8 +1,8 @@
 include ../config
 
-INCLUDE=`rokifd-config -I`
-LIB=`rokifd-config -L`
-LINK=`rokifd-config -l`
+INCLUDE=`roki-fd-config -I`
+LIB=`roki-fd-config -L`
+LINK=`roki-fd-config -l`
 
 CC=gcc
 CFLAGS=-ansi -Wall -O3 $(LIB) $(INCLUDE) -funroll-loops
