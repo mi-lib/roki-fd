@@ -1,6 +1,5 @@
 # default suffices
-# .z3d : 3D shape model
-# .zkc : kinematic chain model
+# .ztk : ZTK format files to describe models
 # .zkci: initial state of a kinematic chain
 # .zvs : vector sequence
 # .zkcs: kinematic chain configuration sequence
@@ -15,14 +14,14 @@ BINDIR=$(PREFIX)/bin
 CC=gcc
 CFLAGS=-ansi -Wall -O3 $(INCLUDE) $(LIB)
 
-LINK=-lrokifd `roki-config -l`
+LINK=-lroki-fd `roki-config -l`
 
 COMPILE=$(CC) $(CFLAGS) -o $@ $< $(LINK)
 
 INSTALL=install -m 755
 
 CONFIGGEN=zeda-config-gen
-CONFIG=rokifd-config
+CONFIG=roki-fd-config
 TARGET=$(CONFIG)
 
 #####################################################################

@@ -2,7 +2,7 @@
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
  * rkfd_vert - vertex / plane contact model
- * additional contributer: 2014- Naoki Wakisaka
+ * contributer: 2014- Naoki Wakisaka
  */
 
 #include <roki-fd/rkfd_util.h>

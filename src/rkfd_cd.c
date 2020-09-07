@@ -2,7 +2,7 @@
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
  * rkfd_cd - collision detection class
- * additional contributer: 2014- Naoki Wakisaka
+ * contributer: 2014- Naoki Wakisaka
  */
 
 #include <roki-fd/rkfd_cd.h>

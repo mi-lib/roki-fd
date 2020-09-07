@@ -2,7 +2,7 @@
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
  * rkfd_solver - contact force computation solver
- * additional contributer: 2014- Naoki Wakisaka
+ * contributer: 2014- Naoki Wakisaka
  */
 
 #include <roki-fd/rkfd_solver.h>

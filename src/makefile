@@ -17,7 +17,7 @@ OBJ=rkfd_property.o\
 	rkfd_sim.o\
 	rkfd_penalty.o\
 	rkfd_vert.o rkfd_volume.o rkfd_mlcp.o
-DLIB=librokifd.so
+DLIB=libroki-fd.so
 
 TARGET=$(DLIB)
 
