@@ -7,7 +7,7 @@ Copyright (C) 2018 Tomomichi Sugihara (Zhidao)
 
 # What is this?
 
-RoKiFD is a software library for robot forward dynamics simulation including:
+RoKi-FD is a software library for robot forward dynamics simulation including:
 * contact force computation
 * joint friction computation
 
@@ -43,7 +43,7 @@ ZEDA, ZM, Zeo and RoKi are required.
 
   Or,
 
-  `cp -a lib/librokifd.so $PREFIX/lib/`  
+  `cp -a lib/libroki-fd.so $PREFIX/lib/`  
   `cp -a include/roki $PREFIX/include/`  
   `cp -a bin/* $PREFIX/bin/`
 
@@ -54,7 +54,7 @@ ZEDA, ZM, Zeo and RoKi are required.
   
   Or, 
   
-  delete $PREFIX/lib/librokifd.so, $PREFIX/include/roki-fd/rokifd.h and $PREFIX/include/roki-fd/rkfd*.h.
+  delete $PREFIX/lib/libroki-fd.so, $PREFIX/include/roki-fd/roki-fd.h and $PREFIX/include/roki-fd/rkfd*.h.
 
 # How to use
 
@@ -71,7 +71,7 @@ if your working shell is C shell (csh, tcsh, etc.).
 
 When you want to compile your code test.c, for example, the following line will work.
 
-```gcc `rokifd-config -L` `rokifd-config -I` test.c `rokifd-config -l` ```
+```gcc `roki-fd-config -L` `roki-fd-config -I` test.c `roki-fd-config -l` ```
 
 # Contact
 

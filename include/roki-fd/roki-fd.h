@@ -1,18 +1,18 @@
-/* RoKiFD - Robot Forward Dynamics library
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
- * contributer: 2014-2018 Naoki Wakisaka
+ * contributer: 2014- Naoki Wakisaka
  */
 
 /*!
  * \mainpage
 
- RoKiFD is a software library for robot forward dynamics simulation including:
+ RoKi-FD is a software library for robot forward dynamics simulation including:
  - contact force computation
  - joint friction computation
  */
 
-#ifndef __ROKIFD_H__
-#define __ROKIFD_H__
+#ifndef __ROKI_FD_H__
+#define __ROKI_FD_H__
 
 #include <roki-fd/rkfd_defs.h>
 #include <roki-fd/rkfd_sim.h>
@@ -22,4 +22,4 @@
 #include <roki-fd/rkfd_volume.h>
 #include <roki-fd/rkfd_mlcp.h>
 
-#endif /* __ROKIFD_H__ */
+#endif /* __ROKI_FD_H__ */

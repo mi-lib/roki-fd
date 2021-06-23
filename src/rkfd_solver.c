@@ -1,8 +1,8 @@
-/* RoKiFD - Robot Forward Dynamics library
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
  * rkfd_solver - contact force computation solver
- * contributer: 2014-2018 Naoki Wakisaka
+ * contributer: 2014- Naoki Wakisaka
  */
 
 #include <roki-fd/rkfd_solver.h>

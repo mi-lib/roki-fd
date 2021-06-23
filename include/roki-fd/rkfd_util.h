@@ -1,8 +1,8 @@
-/* RoKi - Robot Kinetics library
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
  * rkfd_util - utility functions for forward dynamics computation
- * contributer: 2014-2018 Naoki Wakisaka
+ * contributer: 2014- Naoki Wakisaka
  */
 
 #ifndef __RKFD_UTIL_H__
@@ -48,7 +48,7 @@ __EXPORT void rkFDContactForceModifyFriction(rkFDPrp *prp, rkCDPairDat *pd, rkCD
 __EXPORT void rkFDContactForcePushWrench(rkCDPairDat *pd, rkCDVert *cdv);
 
 /******************************************************************************/
-__EXPORT void rkFDUpdateJointRefDrivingTrq(rkFDChainArray *chains);
+__EXPORT void rkFDUpdateJointPrevDrivingTrq(rkFDChainArray *chains);
 __EXPORT void rkFDJointFrictionAll(rkJoint *joint, double weight);
 __EXPORT void rkFDJointFrictionRevolDC(rkJoint *joint, double dt, bool doUpRef);
 __EXPORT void rkFDJointFriction(rkFDChainArray *chains, double dt, double weight, bool doUpRef);

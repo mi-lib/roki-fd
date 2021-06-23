@@ -37,7 +37,7 @@ relaxation : 10.0
 bind : soft body
 staticfriction : 0.5
 kineticfriction : 0.3
-elasticity : 100.0
+elasticity : 50.0
 viscosity : 1.0
 
 [contact]

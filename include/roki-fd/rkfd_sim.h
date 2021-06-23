@@ -1,8 +1,8 @@
-/* RoKiFD - Robot Forward Dynamics library
+/* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
  * rkfd_sim - forward dynamics simulation
- * contributer: 2014-2018 Naoki Wakisaka
+ * contributer: 2014- Naoki Wakisaka
  */
 
 #ifndef __RKFD_SIM_H__
@@ -38,11 +38,11 @@ zListClass( rkFDCellList, rkFDCell, rkFDCellDat );
 typedef struct _rkFD{
   double t;
   rkFDPrp prp;
-  rkFDSolver solver;    /* solver */
-  rkFDCellList list;    /* chain list */
-  rkContactInfoPool ci; /* contact information list */
-  rkContactInfo cidef;  /* default contact infomation */
-  rkFDCD cd;            /* contact maneger */
+  rkFDSolver solver;     /* solver */
+  rkFDCellList list;     /* chain list */
+  rkContactInfoArray ci; /* contact information list */
+  rkContactInfo cidef;   /* default contact infomation */
+  rkFDCD cd;             /* contact maneger */
 
   zODE2 ode;
   int ode_step;
