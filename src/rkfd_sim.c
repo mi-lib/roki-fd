@@ -176,7 +176,7 @@ rkFDCellDat *_rkFDCellDatJointFrictionPivotInit(rkFDCellDat *ld)
 
 rkFDCellDat *_rkFDCellDatInit(rkFDCellDat *ld)
 {
-  rkChainABIAlloc( rkFDCellDatChain(ld) );
+  rkChainAllocABI( rkFDCellDatChain(ld) );
   ld->_dis.size = ld->_vel.size = ld->_acc.size = rkChainJointSize( rkFDCellDatChain(ld) );
   ld->_dis.buf = NULL;
   ld->_vel.buf = NULL;
@@ -506,11 +506,11 @@ void _rkFDUpdateAcc(rkFD *fd, bool doUpRef)
   void (*update)(rkChain*);
 
   if( !doUpRef ){
-    update_abi = &rkChainABIUpdateAddExForce;
-    update     = &rkChainABIUpdate;
+    update_abi = &rkChainUpdateCachedABI;
+    update     = &rkChainUpdateABI;
   } else {
-    update_abi = &rkChainABIUpdateAddExForceGetWrench;
-    update     = &rkChainABIUpdateGetWrench;
+    update_abi = &rkChainUpdateCachedABIWrench;
+    update     = &rkChainUpdateABIWrench;
   }
 
   zListForEach( &fd->list, lc ){

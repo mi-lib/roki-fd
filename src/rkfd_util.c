@@ -153,8 +153,8 @@ void rkFDUpdateAccBias(rkFDChainArray *chains)
   rkFDArrayForEach( chains, c ){
     if( (*c)->has_rigid_col ){
       (*c)->done_abi_init = true;
-      rkChainABIUpdate( &(*c)->chain );
-      rkChainABIPushPrpAccBias( &(*c)->chain );
+      rkChainUpdateABI( &(*c)->chain );
+      rkChainSaveABIAccBias( &(*c)->chain );
       rkFDChainExtWrenchDestroy( &(*c)->chain );
     }
   }
@@ -163,20 +163,20 @@ void rkFDUpdateAccBias(rkFDChainArray *chains)
 void rkFDChainUpdateAccAddExForceTwo(rkCDPairDat *pd, rkWrench *w[])
 {
   if( pd->cell[0]->data.chain == pd->cell[1]->data.chain ) /* self collision */
-    rkChainABIUpdateAddExForceTwo( pd->cell[0]->data.chain, pd->cell[0]->data.link, w[0], pd->cell[1]->data.link, w[1] );
+    rkChainUpdateCachedABIPair( pd->cell[0]->data.chain, pd->cell[0]->data.link, w[0], pd->cell[1]->data.link, w[1] );
   else {
-    rkChainABIUpdateAddExForceTwo( pd->cell[0]->data.chain, pd->cell[0]->data.link, w[0], NULL, NULL );
-    rkChainABIUpdateAddExForceTwo( pd->cell[1]->data.chain, pd->cell[1]->data.link, w[1], NULL, NULL );
+    rkChainUpdateCachedABIPair( pd->cell[0]->data.chain, pd->cell[0]->data.link, w[0], NULL, NULL );
+    rkChainUpdateCachedABIPair( pd->cell[1]->data.chain, pd->cell[1]->data.link, w[1], NULL, NULL );
   }
 }
 
 void rkFDChainABIPopPrpExForceTwo(rkCDPairDat *pd)
 {
   if( pd->cell[0]->data.chain == pd->cell[1]->data.chain )
-    rkChainABIPopPrpAccBiasAddExForceTwo( pd->cell[0]->data.chain, pd->cell[0]->data.link, pd->cell[1]->data.link );
+    rkChainRestoreABIAccBiasPair( pd->cell[0]->data.chain, pd->cell[0]->data.link, pd->cell[1]->data.link );
   else {
-    rkChainABIPopPrpAccBiasAddExForceTwo( pd->cell[0]->data.chain, pd->cell[0]->data.link, NULL );
-    rkChainABIPopPrpAccBiasAddExForceTwo( pd->cell[1]->data.chain, pd->cell[1]->data.link, NULL );
+    rkChainRestoreABIAccBiasPair( pd->cell[0]->data.chain, pd->cell[0]->data.link, NULL );
+    rkChainRestoreABIAccBiasPair( pd->cell[1]->data.chain, pd->cell[1]->data.link, NULL );
   }
 }
 
