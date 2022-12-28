@@ -34,8 +34,8 @@ __EXPORT zVec6D *rkFDChainPointRelativeAcc6D(rkCDPairDat *pd, zVec3D *p, zVec6D 
 /******************************************************************************/
 /* update and set ABIPrp */
 __EXPORT void rkFDUpdateAccBias(rkFDChainArray *chains);
-__EXPORT void rkFDChainUpdateAccAddExForceTwo(rkCDPairDat *pd, rkWrench *w[]); /* TODO: Rename */
-__EXPORT void rkFDChainABIPopPrpExForceTwo(rkCDPairDat *pd); /* TODO: Rename */
+__EXPORT void rkFDChainUpdateCachedABIPair(rkCDPairDat *pd, rkWrench *w[]);
+__EXPORT void rkFDChainRestoreABIAccBiasPair(rkCDPairDat *pd);
 
 /******************************************************************************/
 __EXPORT void rkFDChainExtWrenchDestroy(rkChain *chain);

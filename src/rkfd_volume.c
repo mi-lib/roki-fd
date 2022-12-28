@@ -197,11 +197,11 @@ static void _rkFDSolverRelationAccForce(rkFDSolver *s)
         if( j != 0 )
           zVec6DRevDRC( rkWrenchW(_prp(s)->w[j]) );
       }
-      rkFDChainUpdateAccAddExForceTwo( *pd, _prp(s)->w );
+      rkFDChainUpdateCachedABIPair( *pd, _prp(s)->w );
       _rkFDSolverRelativeAcc( s, *pd, _prp(s)->b, _prp(s)->t );
       zMatPutCol( _prp(s)->a, offset+i, _prp(s)->t );
       /* restore ABIPrp */
-      rkFDChainABIPopPrpExForceTwo( *pd );
+      rkFDChainRestoreABIAccBiasPair( *pd );
     }
     offset += 6;
   }

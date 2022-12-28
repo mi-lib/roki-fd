@@ -160,7 +160,7 @@ void rkFDUpdateAccBias(rkFDChainArray *chains)
   }
 }
 
-void rkFDChainUpdateAccAddExForceTwo(rkCDPairDat *pd, rkWrench *w[])
+void rkFDChainUpdateCachedABIPair(rkCDPairDat *pd, rkWrench *w[])
 {
   if( pd->cell[0]->data.chain == pd->cell[1]->data.chain ) /* self collision */
     rkChainUpdateCachedABIPair( pd->cell[0]->data.chain, pd->cell[0]->data.link, w[0], pd->cell[1]->data.link, w[1] );
@@ -170,7 +170,7 @@ void rkFDChainUpdateAccAddExForceTwo(rkCDPairDat *pd, rkWrench *w[])
   }
 }
 
-void rkFDChainABIPopPrpExForceTwo(rkCDPairDat *pd)
+void rkFDChainRestoreABIAccBiasPair(rkCDPairDat *pd)
 {
   if( pd->cell[0]->data.chain == pd->cell[1]->data.chain )
     rkChainRestoreABIAccBiasPair( pd->cell[0]->data.chain, pd->cell[0]->data.link, pd->cell[1]->data.link );
