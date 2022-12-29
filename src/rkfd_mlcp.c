@@ -113,12 +113,12 @@ static void _rkFDSolverRelationAccForceOne(rkFDSolver *s, rkCDPairDat *cpd, rkCD
     if( cpd->cell[j] != cdv->data.cell )
       zVec3DRevDRC( rkWrenchForce(_prp(s)->w[j]) );
   }
-  rkFDChainUpdateAccAddExForceTwo( cpd, _prp(s)->w );
+  rkFDChainUpdateCachedABIPair( cpd, _prp(s)->w );
   _rkFDSolverRelativeAcc( s, cpd, _prp(s)->b, _prp(s)->t );
   zMatPutCol( _prp(s)->a, offset, _prp(s)->t );
 
   /* restore ABIPrp */
-  rkFDChainABIPopPrpExForceTwo( cpd );
+  rkFDChainRestoreABIAccBiasPair( cpd );
 }
 
 static void _rkFDSolverRelationAccForce(rkFDSolver *s)
