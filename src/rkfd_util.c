@@ -42,7 +42,7 @@ void rkFDLinkAddSlideVel(rkCDCell *cell, zVec3D *p, zVec3D *n, zVec3D *v)
 zVec3D *rkFDChainPointRelativeVel(rkCDPairDat *pd, zVec3D *p, zVec3D *n, rkCDCell *cell, zVec3D *v)
 {
   zVec3D vv[2];
-  register int i;
+  int i;
 
   for( i=0; i<2; i++ ){
     if( pd->cell[i]->data.type == RK_CD_CELL_STAT )
@@ -73,7 +73,7 @@ zVec6D *rkFDLinkPointWldVel6D(rkLink *link, zVec3D *p, zVec6D *v)
 zVec6D *rkFDChainPointRelativeVel6D(rkCDPairDat *pd, zVec3D *p, zVec3D *n, zVec6D *v)
 {
   zVec6D vv[2];
-  register int i;
+  int i;
 
   for( i=0; i<2; i++ ){
     if( pd->cell[i]->data.type == RK_CD_CELL_STAT )
@@ -103,7 +103,7 @@ zVec3D *rkFDLinkPointWldAcc(rkLink *link, zVec3D *p, zVec3D *a)
 zVec3D *rkFDChainPointRelativeAcc(rkCDPairDat *pd, zVec3D *p, rkCDCell *cell, zVec3D *a)
 {
   zVec3D av[2];
-  register int i;
+  int i;
 
   for( i=0; i<2; i++ )
     if( pd->cell[i]->data.type == RK_CD_CELL_STAT )
@@ -132,7 +132,7 @@ zVec6D *rkFDLinkPointWldAcc6D(rkLink *link, zVec3D *p, zVec6D *a)
 zVec6D *rkFDChainPointRelativeAcc6D(rkCDPairDat *pd, zVec3D *p, zVec6D *a)
 {
   zVec6D av[2];
-  register int i;
+  int i;
 
   for( i=0; i<2; i++ )
     if( pd->cell[i]->data.type == RK_CD_CELL_STAT )
@@ -184,7 +184,7 @@ void rkFDChainRestoreABIAccBiasPair(rkCDPairDat *pd)
 /* destroy temporary wrench list */
 void rkFDChainExtWrenchDestroy(rkChain *chain)
 {
-  register int i;
+  int i;
 
   for( i=0; i<rkChainLinkNum(chain); i++ )
     rkWrenchListDestroy( rkLinkExtWrenchBuf(rkChainLink(chain,i)) );
@@ -197,7 +197,7 @@ double rkFDKineticFrictionWeight(double w, double fs)
 
 /* sin cos table */
 bool rkFDCrateSinCosTable(zVec table[2], int num, double offset){
-	register int i;
+	int i;
 	double th, dth;
 
 	table[0] = zVecAlloc( num );
@@ -216,7 +216,7 @@ bool rkFDCrateSinCosTable(zVec table[2], int num, double offset){
 /* contact force */
 void rkFDUpdateRefSlide(rkCDPairDat *pd, rkCDVert *cdv, double dt)
 {
-  register int i;
+  int i;
   zVec3D tmpv, sv;
 
   /* for slide mode */
@@ -267,7 +267,7 @@ void rkFDContactForceModifyFriction(rkFDPrp *prp, rkCDPairDat *pd, rkCDVert *cdv
 void rkFDContactForcePushWrench(rkCDPairDat *pd, rkCDVert *cdv)
 {
   rkWrench *w;
-  register int i;
+  int i;
 
   for( i=0; i<2; i++){
     w = zAlloc( rkWrench, 1 );
@@ -290,7 +290,7 @@ void rkFDUpdateJointPrevDrivingTrq(rkFDChainArray *chains)
   rkFDChain **fdc;
   rkChain *chain;
   rkJoint *joint;
-  register int i, j;
+  int i, j;
   double val[6], tf[6];
   rkJointFrictionPivot jfp[6];
 
@@ -317,7 +317,7 @@ void rkFDUpdateJointPrevDrivingTrq(rkFDChainArray *chains)
 void rkFDJointFrictionAll(rkJoint *joint, double weight)
 {
   double kf[6], v[6];
-  register int i;
+  int i;
 
   rkJointGetKFriction( joint, kf );
   rkJointGetVel( joint, v );
@@ -368,7 +368,7 @@ void rkFDJointFriction(rkFDChainArray *chains, double dt, double weight, bool do
   rkChain *chain;
   rkJoint *joint;
   rkMotor *motor;
-  register int i;
+  int i;
 
   rkFDArrayForEach( chains, fdc ){
     chain = rkFDChainBase( *fdc );

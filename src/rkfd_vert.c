@@ -73,7 +73,7 @@ static void _rkFDSolverFrictionConstraint(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
-  register int i;
+  int i;
   int cnt = 0;
   int cnum;
   int offset, ioffset;
@@ -107,7 +107,7 @@ static void _rkFDSolverBiasAcc(rkFDSolver *s, zVec acc)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
-  register int i;
+  int i;
   int offset = 0;
   zVec3D av;
 
@@ -125,7 +125,7 @@ static void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
-  register int i;
+  int i;
   int offset = 0;
   zVec3D av;
 
@@ -153,7 +153,7 @@ static void _rkFDSolverRelationAccForce(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
-  register int i, j;
+  int i, j;
   int offset = 0;
 
   /* b */
@@ -232,7 +232,7 @@ static void _rkFDSolverCompensateDepth(rkFDSolver *s)
 
 static zVec _rkFDSolverQPASMInit(rkFDSolver *s, zVec ans)
 {
-  register int i;
+  int i;
 
   zVecZero( ans );
   for( i=0; i<_prp(s)->colnum; i++ )
@@ -288,7 +288,7 @@ static void _rkFDSolverSetForce(rkFDSolver *s, bool doUpRef)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
-  register int i;
+  int i;
   int cnt = 0, offset, ioffset, cnum;
   bool flag;
 
