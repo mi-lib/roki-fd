@@ -195,11 +195,7 @@ rkFDCell *_rkFDCellPush(rkFD *fd, rkFDCell *lc)
     return NULL;
   }
   /* cd reg */
-#if 0
-  rkCDChainReg( rkFDCDBase(&fd->cd), rkFDCellChain(lc), true );
-#else
   rkCDChainReg( rkFDCDBase(&fd->cd), rkFDCellChain(lc), RK_CD_CELL_MOVE );
-#endif
   /* set contact info */
   zListForEach( &rkFDCDBase(&fd->cd)->plist, cdp ){
     if( cdp->data.ci == NULL ){
