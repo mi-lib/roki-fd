@@ -2,4 +2,4 @@ PREFIX=$(HOME)/usr
 PROJNAME=roki-fd
 VERSION=1.4.5
 
-DEPENDENCY="zeda=1.6.21;zm=1.4.4;zeo=1.10.2;roki=2.0.1"
+DEPENDENCY="zeda=1.6.45;zm=1.6.3;zeo=1.12.3;roki=2.0.13"

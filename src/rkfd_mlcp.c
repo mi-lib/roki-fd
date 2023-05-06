@@ -59,7 +59,7 @@ static void _rkFDSolverBiasAcc(rkFDSolver *s, zVec acc)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
-  register int i;
+  int i;
   int offset = 0;
   zVec3D av;
 
@@ -79,7 +79,7 @@ static void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec
   rkCDVert *cdv;
   int offset = 0;
   zVec3D av;
-  register int i;
+  int i;
 
   rkFDCDForEachRigidPair( s->cd, pd ){
     if( (*pd)->cell[0]->data.chain != cpd->cell[0]->data.chain &&
@@ -103,7 +103,7 @@ static void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec
 
 static void _rkFDSolverRelationAccForceOne(rkFDSolver *s, rkCDPairDat *cpd, rkCDVert *cdv, zVec3D *axis, int offset)
 {
-  register int j;
+  int j;
 
   for( j=0; j<2; j++ ){
     rkWrenchInit( _prp(s)->w[j] );
@@ -125,7 +125,7 @@ static void _rkFDSolverRelationAccForce(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
-  register int i;
+  int i;
   int offset = 0;
 
   /* b */
@@ -148,7 +148,7 @@ static void _rkFDSolverBiasVel(rkFDSolver *s)
   rkCDPairDat **pd;
   rkCDVert *cdv;
   int offset = 0;
-  register int i;
+  int i;
 
   zVecMulDRC( _prp(s)->b, rkFDPrpDT(s->fdprp) );
   rkFDCDForEachRigidPair( s->cd, pd ){
@@ -165,7 +165,7 @@ static void _rkFDSolverRelaxationCompensation(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   rkCDVert *cdv;
-  register int i;
+  int i;
   int offset = 0;
   zVec3D d;
   double k;
@@ -194,7 +194,7 @@ static void _rkFDSolverMLCP(rkFDSolver *s)
   int offset = 0;
   int cnt = 0;
   double ff[2], fs, fnorm;
-  register int i;
+  int i;
 
   /* MLCP */
   zVecZero( _prp(s)->f );
@@ -254,7 +254,7 @@ static void _rkFDSolverSetForce(rkFDSolver *s, bool doUpRef)
   rkCDPairDat **pd;
   rkCDVert *cdv;
   int offset = 0;
-  register int i;
+  int i;
   double fn ,fs, mu;
 
   rkFDCDForEachRigidPair( s->cd, pd ){

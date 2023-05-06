@@ -173,7 +173,7 @@ static void _rkFDSolverRelativeAcc(rkFDSolver *s, rkCDPairDat *cpd, zVec b, zVec
 static void _rkFDSolverRelationAccForce(rkFDSolver *s)
 {
   rkCDPairDat **pd;
-  register int i, j;
+  int i, j;
   int offset = 0;
   zVec3D pos[2];
 
@@ -275,7 +275,7 @@ static double _rkFDSolverConstrainArea(zVec3D p[])
 
 static void _rkFDSolverConstraintAddQ(zVec3D p[], zVec3D pm[], double s, zMat6D *q)
 {
-  register int i;
+  int i;
   zVec3D pc;
   zMat3D mm[3], tmpm;
 
@@ -292,7 +292,7 @@ static void _rkFDSolverConstraintAddQ(zVec3D p[], zVec3D pm[], double s, zMat6D 
 
 static void _rkFDSolverConstraintDepth(zVec3D pm[], double h[], rkContactInfo *ci, double s, zVec3D norm, zVec6D *c)
 {
-  register int i;
+  int i;
   double hm[3], hc;
   zVec3D tmpv;
 
@@ -308,7 +308,7 @@ static void _rkFDSolverConstraintDepth(zVec3D pm[], double h[], rkContactInfo *c
 
 static void _rkFDSolverConstraintSignDepth(double h[], int *st, int stp[])
 {
-  register int i;
+  int i;
 
   *st = 0;
   stp[0] = stp[1] = stp[2] = 0;
@@ -393,7 +393,7 @@ static int __rk_fd_plane_cmp(void *p1, void *p2, void *priv)
 
 static void _rkFDSolverConstraint(rkCDPairDat *cpd, zMat6D *q, zVec6D *c)
 {
-  register int i, j;
+  int i, j;
   zTri3D *face;
   double h[3], s;
   zVec3D pf[3], p[3], pm[3], pp[2];
@@ -495,7 +495,7 @@ static void _rkFDSolverQPCreate(rkFDSolver *s)
   zMat6D qv;
   zVec6D cv, tmpv;
   rkCDPairDat **pd;
-  register int i, j;
+  int i, j;
   int offset = 0;
 
   zMatZero( _prp(s)->q );
@@ -649,7 +649,7 @@ static void _rkFDSolverModifyWrenchStaticSetSize(rkFDSolver *s, rkCDPairDat *cpd
 static void _rkFDSolverModifyWrenchStaticConstraint(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
 {
   rkCDPlane *cdpl;
-  register int i;
+  int i;
   int offset = 0;
 
   zListForEach( &cpd->cplane, cdpl ){
@@ -775,7 +775,7 @@ static void _rkFDSolverPlaneVertSlideDir(rkFDSolver *s, rkCDPairDat *cpd, rkCDPl
 static void _rkFDSolverModifyWrenchKineticEvalFunc(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
 {
   rkCDPlane *cdpl;
-  register int i;
+  int i;
   int offset = 0;
   double wn[3];
 
@@ -792,7 +792,7 @@ static void _rkFDSolverModifyWrenchKineticEvalFunc(rkFDSolver *s, rkCDPairDat *c
 static void _rkFDSolverModifyWrenchKineticEvalFuncSafety(rkFDSolver *s, rkCDPairDat *cpd, zVec6D *w)
 {
   rkCDPlane *cdpl;
-  register int i;
+  int i;
   int offset = 0;
   double wn[2];
 
@@ -854,7 +854,7 @@ static void _rkFDSolverModifyWrenchSetKinetic(rkCDPairDat *cpd, bool doUpRef)
 
 static void _rkFDSolverModifyWrenchSetForce(rkCDPairDat *cpd, zVec6D *w)
 {
-  register int i;
+  int i;
 
   zVec6DZero( &cpd->f );
   for( i=0; i<3; i++ ){
@@ -868,7 +868,7 @@ static void _rkFDSolverModifyWrench(rkFDSolver *s, bool doUpRef)
   rkCDPairDat **pd;
   zVec6D w;
   double fn, fs, tl;
-  register int i;
+  int i;
 
   rkFDCDForEachRigidPair( s->cd, pd ){
     if( zListIsEmpty(&(*pd)->cplane) ) continue;
@@ -917,7 +917,7 @@ static void _rkFDSolverPushWrench(rkFDSolver *s)
 {
   rkCDPairDat **pd;
   rkWrench *w;
-  register int i;
+  int i;
 
   rkFDCDForEachRigidPair( s->cd, pd ){
     for( i=0; i<2; i++ ){

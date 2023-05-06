@@ -156,7 +156,7 @@ bool _rkFDAllocJointStatePop(rkFD *fd, rkFDCell *rlc)
 
 rkFDCellDat *_rkFDCellDatJointFrictionPivotInit(rkFDCellDat *ld)
 {
-  register int i, j;
+  int i, j;
   rkJoint *joint;
   double val[6];
   rkJointFrictionPivot jfp[6];
@@ -195,7 +195,7 @@ rkFDCell *_rkFDCellPush(rkFD *fd, rkFDCell *lc)
     return NULL;
   }
   /* cd reg */
-  rkCDChainReg( rkFDCDBase(&fd->cd), rkFDCellChain(lc), true );
+  rkCDChainReg( rkFDCDBase(&fd->cd), rkFDCellChain(lc), RK_CD_CELL_MOVE );
   /* set contact info */
   zListForEach( &rkFDCDBase(&fd->cd)->plist, cdp ){
     if( cdp->data.ci == NULL ){
@@ -474,7 +474,7 @@ void _rkFDUpdateCD(rkFD *fd, bool doUpRef)
 bool _rkFDUpdateInitSolver(rkFD *fd)
 {
   rkFDCell *lc;
-  register int i;
+  int i;
 
   if( zListSize(&fd->list) != 0 ){
     zArrayAlloc( rkFDSolverChains(&fd->solver), rkFDChain*, zListSize(&fd->list) );
@@ -533,9 +533,9 @@ void _rkFDUpdateAll(rkFD *fd, double t, bool doUpRef)
 zVec _rkFDUpdate(double t, zVec dis, zVec vel, void *fd, zVec acc)
 {
   zVecZero( acc );
-  _rkFDConnectJointState( fd, dis, vel, acc );
-  _rkFDUpdateAll( fd, t, false );
-  _rkFDUpdateAcc( fd, false );
+  _rkFDConnectJointState( (rkFD *)fd, dis, vel, acc );
+  _rkFDUpdateAll( (rkFD *)fd, t, false );
+  _rkFDUpdateAcc( (rkFD *)fd, false );
   return acc;
 }
 

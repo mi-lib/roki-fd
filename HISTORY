@@ -1,3 +1,5 @@
+2023. 3.30. Abolished register keywords. [rkfd_util, rkfd_sim, rkfd_vert, rkfd_volume, rkfd_mlcp]
+2023. 3.30. Modified config.lib and config.tools for C++ compilation. [src, tools]
 2022.12.29. Renamed rkFDChainUpdateAccAddExForceTwo and rkFDChainABIPopPrpExForceTwo to rkFDChainUpdateCachedABIPair and rkFDChainRestoreABIAccBiasPair. [rkfd_util]
 2022.12.29. Reflected renaming of rkChainABIAlloc, rkChainABIUpdate, rkChainABIUpdateGetWrench, rkChainABIUpdateAddExForce, rkChainABIUpdateAddExForceGetWrench, rkChainABIPushPrpAccBias, rkChainABIUpdateAddExForceTwo, rkChainABIPopPrpAccBiasAddExForceTwo. [rkfd_util, rkfd_sim, rkfd_mlcp, rkfd_vert, rkfd_volume]
 2021. 6. 1. Applied new zeda-makefile-gen to compilation of shared objects. [src]
