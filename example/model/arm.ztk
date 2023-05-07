@@ -6,26 +6,25 @@ name: white
 ambient:  1.0, 1.0, 1.0
 diffuse:  1.0, 1.0, 1.0
 specular: 0.0, 0.0, 0.0
-exp: 1.0
+esr: 1.0
 
 [optic]
 name: green
 ambient:  0.0, 1.0, 0.0
 diffuse:  0.0, 1.0, 0.0
 specular: 0.0, 0.0, 0.0
-exp: 1.0
+esr: 1.0
 
 [optic]
 name: red
 ambient:  1.0, 0.0, 0.0
 diffuse:  1.0, 0.0, 0.0
 specular: 0.0, 0.0, 0.0
-exp: 1.0
+esr: 1.0
 
 [shape]
 name: base
 type: cylinder
-bb: AABB
 optic: white
 center: 0, 0, 0
 center: 0, 0, 0.06
@@ -34,7 +33,6 @@ radius: 0.05
 [shape]
 name: shaft
 type: cylinder
-bb: AABB
 optic: white
 center: 0, 0, 0.02
 center: 0, 0, 0.13
@@ -43,7 +41,6 @@ radius: 0.01
 [shape]
 name: joint
 type: sphere
-bb: AABB
 optic: green
 center: 0, 0, 0
 radius: 0.02
@@ -51,7 +48,6 @@ radius: 0.02
 [shape]
 name: wrist
 type: cylinder
-bb: AABB
 optic: white
 center: 0, 0, 0.0
 center: 0, 0,-0.03
@@ -60,7 +56,6 @@ radius: 0.01
 [shape]
 name: hand
 type: cone
-bb: AABB
 optic: red
 center: 0, 0, 0
 vert: 0, 0, 0.05
@@ -69,7 +64,7 @@ radius: 0.02
 % 0:base
 [link]
 name : base
-jointtype : fix
+jointtype : fixed
 frame: {
  1, 0, 0, 0,
  0, 1, 0, 0,
@@ -79,7 +74,10 @@ shape: base
 
 [link]
 name : link1
-jointtype : sphere
+jointtype : spherical
+mass: 1.0
+COM: auto
+inertia: auto
 frame: {
  1, 0, 0, 0,
  0, 1, 0, 0,
@@ -91,7 +89,10 @@ shape: shaft
 
 [link]
 name : link2
-jointtype : sphere
+jointtype : spherical
+mass: 1.0
+COM: auto
+inertia: auto
 frame: {
  1, 0, 0, 0,
  0, 1, 0, 0,
@@ -103,7 +104,10 @@ shape: shaft
 
 [link]
 name : link3
-jointtype : sphere
+jointtype : spherical
+mass: 1.0
+COM: auto
+inertia: auto
 frame: {
  1, 0, 0, 0,
  0, 1, 0, 0,
@@ -115,7 +119,10 @@ shape: shaft
 
 [link]
 name : link4
-jointtype : sphere
+jointtype : spherical
+mass: 0.6
+COM: auto
+inertia: auto
 frame: {
  1, 0, 0, 0,
  0, 1, 0, 0,
@@ -126,7 +133,10 @@ shape: joint
 
 [link]
 name : hand
-jointtype : fix
+jointtype : fixed
+mass: 0.5
+COM: auto
+inertia: auto
 frame: {
  1, 0, 0, 0,
  0, 1, 0, 0,

@@ -3,37 +3,37 @@ name : 2DOF_arm
 
 [optic]
 name: white
-ambient: 0.8, 0.8, 0.8
-diffuse: 1.0, 1.0, 1.0
-specular: 0.4, 0.4, 0.4
-exp: 1
+ambient: 0.8 0.8 0.8
+diffuse: 1 1 1
+specular: 0.4 0.4 0.4
+esr: 1
 shininess: 0
 alpha: 1
 
 [optic]
 name: white2
-ambient: 0.5, 0.5, 0.5
-diffuse: 0.7, 0.7, 0.7
-specular: 0.3, 0.3, 0.3
-exp: 1
+ambient: 0.5 0.5 0.5
+diffuse: 0.7 0.7 0.7
+specular: 0.3 0.3 0.3
+esr: 1
 shininess: 0
 alpha: 1
 
 [optic]
 name: gray
-ambient: 0.2, 0.1, 0.1
-diffuse: 0.4, 0.2, 0.1
-specular: 0.1, 0.1, 0.1
-exp: 1
+ambient: 0.2 0.1 0.1
+diffuse: 0.4 0.2 0.1
+specular: 0.1 0.1 0.1
+esr: 1
 shininess: 0
 alpha: 1
 
 [optic]
 name: gray2
-ambient: 0.3, 0.2, 0.1
-diffuse: 0.5, 0.3, 0.2
-specular: 0.1, 0.1, 0.1
-exp: 1
+ambient: 0.3 0.2 0.1
+diffuse: 0.5 0.3 0.2
+specular: 0.1 0.1 0.1
+esr: 1
 shininess: 0
 alpha: 1
 
@@ -132,16 +132,16 @@ radius : 0.05
 name : motor1
 type: dc
 motorconstant : 2.58e-2
-admitance : 0.42373
+admittance : 0.42373
 maxvoltage : 24.0
 minvoltage : -24.0
-ratio : 120.0
-inertia : 1.65e-6
+gearratio : 120.0
+rotorinertia : 1.65e-6
 gearinertia : 5.38e-6
 
 [link]
 name: link#00
-jointtype: fix
+jointtype: fixed
 mass: 1.5
 stuff: body
 COM: { 0.067, 0, 0 }
@@ -161,10 +161,10 @@ shape: shape_motor_base
 [link]
 name: link#01
 jointtype: revolute
-min: -180.0000000000
-max: 180.0000000000
-stiff: 0.0000000000
-viscos: 2.2
+min: -180
+max: 180
+stiffness: 0
+viscosity: 2.2
 coulomb: 4.32
 staticfriction: 4.92
 motor: motor1
@@ -188,10 +188,10 @@ parent: link#00
 [link]
 name: link#02
 jointtype: revolute
-min: -180.0000000000
-max: 180.0000000000
-stiff: 0.0000000000
-viscos: 2.2
+min: -180
+max: 180
+stiffness: 0
+viscosity: 2.2
 coulomb: 4.32
 staticfriction: 4.92
 motor: motor1

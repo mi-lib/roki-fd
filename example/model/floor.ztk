@@ -3,16 +3,16 @@ name : floor
 
 [optic]
 name: blue
-ambient: 0.1, 0.1, 0.3
-diffuse: 0.2, 0.2, 0.4
-specular: 0.1, 0.1, 0.1
-exp: 1
+ambient: 0.1 0.1 0.3
+diffuse: 0.2 0.2 0.4
+specular: 0.1 0.1 0.1
+esr: 1
 shininess: 0
 alpha: 1
 
 [shape]
 type : box
-name : shape_floor
+name : shape
 optic : blue
 center : 0, 0, -0.2
 depth : 5.0
@@ -21,7 +21,7 @@ height : 0.4
 
 [link]
 name: link#00
-jointtype: fix
+jointtype: fixed
 mass: 99.9
 stuff: ground
 COM: { 0, 0, 0 }
@@ -35,4 +35,4 @@ frame: {
  0, 1, 0, 0
  0, 0, 1, 0
 }
-shape: shape_floor
+shape: shape
