@@ -8,6 +8,7 @@
 #include <roki-fd/rkfd_util.h>
 #include <roki-fd/rkfd_vert.h>
 #include <roki-fd/rkfd_penalty.h>
+#include <roki-fd/rkfd_opt_qp.h>
 
 /* the friction states are determined based on the computed friction forces one step before.
  * the direction of the kinetic friction is not fixed.
@@ -230,10 +231,12 @@ static void _rkFDSolverCompensateDepth(rkFDSolver *s)
   }
 }
 
-static zVec _rkFDSolverQPASMInit(rkFDSolver *s, zVec ans)
+static zVec _rkFDSolverQPASMInit(zMat a, zVec b, zVec ans, void *util)
 {
+  rkFDSolver *s;
   int i;
 
+  s = (rkFDSolver *)util;
   zVecZero( ans );
   for( i=0; i<_prp(s)->colnum; i++ )
     zVecElemNC(ans,3*i) = 1.0;
@@ -246,13 +249,9 @@ static double _rkFDSolverQPASMCond(zMat a, zVec ans, int i, void *util)
   return zVec3DInnerProd( (zVec3D *)&zMatElemNC(a,i,3*n), (zVec3D *)&zVecElemNC(ans,3*n) );
 }
 
-/* wapper of ASM */
-extern void _zQPSolveASM(zMat q, zVec c, zMat a, zVec b, zVec ans, zIndex idx, void *util, double cond(zMat,zVec,int,void*));
-
 static void _rkFDSolverQPASM(rkFDSolver *s)
 {
-  _rkFDSolverQPASMInit( s, _prp(s)->f );
-  _zQPSolveASM( _prp(s)->q, _prp(s)->c, _prp(s)->nf, _prp(s)->d, _prp(s)->f, _prp(s)->idx, s, _rkFDSolverQPASMCond );
+  rkFDQPSolveASM( _prp(s)->q, _prp(s)->c, _prp(s)->nf, _prp(s)->d, _prp(s)->f, _prp(s)->idx, _rkFDSolverQPASMInit, _rkFDSolverQPASMCond, s);
 }
 
 /* Quadratic Problem */

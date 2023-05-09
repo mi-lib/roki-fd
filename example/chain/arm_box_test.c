@@ -13,7 +13,7 @@ void control(rkFDCell *cell)
   double dis, vel, e;
   rkJoint *joint;
 
-  for( i=0; i<rkChainNum(rkFDCellChain(cell)); i++ ){
+  for( i=0; i<rkChainLinkNum(rkFDCellChain(cell)); i++ ){
     joint = rkChainLinkJoint(rkFDCellChain(cell),i);
     rkJointGetDis( joint, &dis );
     rkJointGetVel( joint, &vel );

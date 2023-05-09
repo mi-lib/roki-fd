@@ -8,6 +8,7 @@
 #include <roki-fd/rkfd_util.h>
 #include <roki-fd/rkfd_volume.h>
 #include <roki-fd/rkfd_penalty.h>
+#include <roki-fd/rkfd_opt_qp.h>
 
 /* ************************************************************************** */
 /* the forward dynamics based on volumetric contact
@@ -540,7 +541,7 @@ static zVec _rkFDSolverQPInit(zMat a, zVec b, zVec ans, void *util)
 
 static void _rkFDSolverQP(rkFDSolver *s)
 {
-  zQPSolveASM( _prp(s)->q, _prp(s)->c, _prp(s)->nf, _prp(s)->d, _prp(s)->f, NULL, _rkFDSolverQPInit, s );
+  rkFDQPSolveASM( _prp(s)->q, _prp(s)->c, _prp(s)->nf, _prp(s)->d, _prp(s)->f, _prp(s)->idx, _rkFDSolverQPInit, NULL, s );
   zVecDivDRC( _prp(s)->f, rkFDPrpDT(s->fdprp) );
 }
 
