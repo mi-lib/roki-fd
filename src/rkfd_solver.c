@@ -5,7 +5,7 @@
  * contributer: 2014- Naoki Wakisaka
  */
 
-#include <roki-fd/rkfd_solver.h>
+#include <roki_fd/rkfd_solver.h>
 
 void rkFDSolverInit(rkFDSolver *solver)
 {

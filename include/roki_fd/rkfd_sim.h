@@ -8,10 +8,10 @@
 #ifndef __RKFD_SIM_H__
 #define __RKFD_SIM_H__
 
-#include <roki-fd/rkfd_property.h>
-#include <roki-fd/rkfd_chain.h>
-#include <roki-fd/rkfd_cd.h>
-#include <roki-fd/rkfd_solver.h>
+#include <roki_fd/rkfd_property.h>
+#include <roki_fd/rkfd_chain.h>
+#include <roki_fd/rkfd_cd.h>
+#include <roki_fd/rkfd_solver.h>
 
 /* NOTE: never include this header file in user programs. */
 
@@ -55,33 +55,33 @@ typedef struct _rkFD{
 #define rkFDDT(f)     (f)->prp.dt
 #define rkFDGetPrp(f) ( &(f)->prp )
 
-__EXPORT rkFD *rkFDCreate(rkFD *fd);
-__EXPORT void rkFDDestroy(rkFD *fd);
+__ROKI_FD_EXPORT rkFD *rkFDCreate(rkFD *fd);
+__ROKI_FD_EXPORT void rkFDDestroy(rkFD *fd);
 
-__EXPORT rkFDCell *rkFDChainReg(rkFD *fd, rkChain *chain);
-__EXPORT rkFDCell *rkFDChainRegFile(rkFD *fd, char filename[]);
-__EXPORT bool rkFDChainUnreg(rkFD *fd, rkFDCell *cell);
+__ROKI_FD_EXPORT rkFDCell *rkFDChainReg(rkFD *fd, rkChain *chain);
+__ROKI_FD_EXPORT rkFDCell *rkFDChainRegFile(rkFD *fd, char filename[]);
+__ROKI_FD_EXPORT bool rkFDChainUnreg(rkFD *fd, rkFDCell *cell);
 
-__EXPORT void rkFDFK(rkFD *fd, zVec dis);
-__EXPORT void rkFDUpdateRate(rkFD *fd, zVec vel, zVec acc);
-__EXPORT void rkFDUpdateFKRate(rkFD *fd);
+__ROKI_FD_EXPORT void rkFDFK(rkFD *fd, zVec dis);
+__ROKI_FD_EXPORT void rkFDUpdateRate(rkFD *fd, zVec vel, zVec acc);
+__ROKI_FD_EXPORT void rkFDUpdateFKRate(rkFD *fd);
 
-__EXPORT void rkFDChainSetDis(rkFDCell *lc, zVec dis);
-__EXPORT void rkFDChainSetVel(rkFDCell *lc, zVec vel);
-__EXPORT bool rkFDContactInfoScanFile(rkFD *fd, char filename[]);
+__ROKI_FD_EXPORT void rkFDChainSetDis(rkFDCell *lc, zVec dis);
+__ROKI_FD_EXPORT void rkFDChainSetVel(rkFDCell *lc, zVec vel);
+__ROKI_FD_EXPORT bool rkFDContactInfoScanFile(rkFD *fd, char filename[]);
 
 /* for a fake-crawler */
-__EXPORT void rkFDCDCellSetSlideMode(rkCDCell *cell, bool mode);
-__EXPORT void rkFDCDCellSetSlideVel(rkCDCell *cell, double vel);
-__EXPORT void rkFDCDCellSetSlideAxis(rkCDCell *cell, zVec3D *axis);
-__EXPORT rkCDCell *rkFDShape3DGetCDCell(rkFD *fd, zShape3D *shape);
-__EXPORT rkCDCell *rkFDShape3DSetSlideMode(rkFD *fd, zShape3D *shape, bool mode);
-__EXPORT rkCDCell *rkFDShape3DSetSlideVel(rkFD *fd, zShape3D *shape, double vel);
-__EXPORT rkCDCell *rkFDShape3DSetSlideAxis(rkFD *fd, zShape3D *shape, zVec3D *axis);
+__ROKI_FD_EXPORT void rkFDCDCellSetSlideMode(rkCDCell *cell, bool mode);
+__ROKI_FD_EXPORT void rkFDCDCellSetSlideVel(rkCDCell *cell, double vel);
+__ROKI_FD_EXPORT void rkFDCDCellSetSlideAxis(rkCDCell *cell, zVec3D *axis);
+__ROKI_FD_EXPORT rkCDCell *rkFDShape3DGetCDCell(rkFD *fd, zShape3D *shape);
+__ROKI_FD_EXPORT rkCDCell *rkFDShape3DSetSlideMode(rkFD *fd, zShape3D *shape, bool mode);
+__ROKI_FD_EXPORT rkCDCell *rkFDShape3DSetSlideVel(rkFD *fd, zShape3D *shape, double vel);
+__ROKI_FD_EXPORT rkCDCell *rkFDShape3DSetSlideAxis(rkFD *fd, zShape3D *shape, zVec3D *axis);
 
 /* ODE updater */
-__EXPORT zVec rkFDODECatDefault(zVec x, double k, zVec v, zVec xnew, void *util);
-__EXPORT zVec rkFDODESubDefault(zVec x1, zVec x2, zVec dx, void *util);
+__ROKI_FD_EXPORT zVec rkFDODECatDefault(zVec x, double k, zVec v, zVec xnew, void *util);
+__ROKI_FD_EXPORT zVec rkFDODESubDefault(zVec x1, zVec x2, zVec dx, void *util);
 #define rkFDODE2Assign(f,t)        zODE2Assign( &(f)->ode, t, rkFDODECatDefault, NULL, rkFDODESubDefault, NULL )
 #define rkFDODE2AssignRegular(f,t) zODE2AssignRegular( &(f)->ode, t )
 
@@ -92,14 +92,14 @@ __EXPORT zVec rkFDODESubDefault(zVec x1, zVec x2, zVec dx, void *util);
     rkFDSolverGetDefaultContactInfo( &(f)->solver, &(f)->cidef ); \
   } while(0)
 
-__EXPORT rkFD *rkFDSolve(rkFD *fd);
-__EXPORT void rkFDUpdateInit(rkFD *fd);
-__EXPORT rkFD *rkFDUpdate(rkFD *fd);
-__EXPORT void rkFDUpdateDestroy(rkFD *fd);
+__ROKI_FD_EXPORT rkFD *rkFDSolve(rkFD *fd);
+__ROKI_FD_EXPORT void rkFDUpdateInit(rkFD *fd);
+__ROKI_FD_EXPORT rkFD *rkFDUpdate(rkFD *fd);
+__ROKI_FD_EXPORT void rkFDUpdateDestroy(rkFD *fd);
 #define rkFDSolveContact(f,b) (f)->_solve_contact(f,b)
 
 /* for debug */
-__EXPORT void rkFDPrint(rkFD *fd);
+__ROKI_FD_EXPORT void rkFDPrint(rkFD *fd);
 
 __END_DECLS
 

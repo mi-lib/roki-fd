@@ -5,7 +5,7 @@
  * contributer: 2014- Naoki Wakisaka
  */
 
-#include <roki-fd/rkfd_cd.h>
+#include <roki_fd/rkfd_cd.h>
 
 void rkFDCDInit(rkFDCD *cd)
 {

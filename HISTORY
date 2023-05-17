@@ -1,3 +1,5 @@
+2023. 5.17. Replaced __EXPORT to __ROKI_FD_EXPORT. [all]
+2023. 5.17. Renamed PROJNAME from roki-fd to roki_fd. [all]
 2023. 3.30. Abolished register keywords. [rkfd_util, rkfd_sim, rkfd_vert, rkfd_volume, rkfd_mlcp]
 2023. 3.30. Modified config.lib and config.tools for C++ compilation. [src, tools]
 2022.12.29. Renamed rkFDChainUpdateAccAddExForceTwo and rkFDChainABIPopPrpExForceTwo to rkFDChainUpdateCachedABIPair and rkFDChainRestoreABIAccBiasPair. [rkfd_util]

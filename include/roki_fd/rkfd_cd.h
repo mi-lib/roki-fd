@@ -9,7 +9,8 @@
 #define __RKFD_CD_H__
 
 #include <roki/rk_cd.h>
-#include <roki-fd/rkfd_array.h>
+#include <roki_fd/rkfd_defs.h>
+#include <roki_fd/rkfd_array.h>
 
 __BEGIN_DECLS
 
@@ -34,12 +35,12 @@ typedef struct{
 #define rkFDCDForEachElastPair(c,p) rkFDArrayForEach(&(c)->elast_pairs, p)
 #define rkFDCDForEachRigidPair(c,p) rkFDArrayForEach(&(c)->rigid_pairs, p)
 
-__EXPORT void rkFDCDInit(rkFDCD *cd);
-__EXPORT void rkFDCDDestroy(rkFDCD *cd);
+__ROKI_FD_EXPORT void rkFDCDInit(rkFDCD *cd);
+__ROKI_FD_EXPORT void rkFDCDDestroy(rkFDCD *cd);
 
-__EXPORT bool rkFDCDUpdateInit(rkFDCD *cd);
-__EXPORT void rkFDCDUpdate(rkFDCD *cd);
-__EXPORT void rkFDCDUpdateDestroy(rkFDCD *cd);
+__ROKI_FD_EXPORT bool rkFDCDUpdateInit(rkFDCD *cd);
+__ROKI_FD_EXPORT void rkFDCDUpdate(rkFDCD *cd);
+__ROKI_FD_EXPORT void rkFDCDUpdateDestroy(rkFDCD *cd);
 
 __END_DECLS
 

@@ -14,12 +14,12 @@
 #ifndef __ROKI_FD_H__
 #define __ROKI_FD_H__
 
-#include <roki-fd/rkfd_defs.h>
-#include <roki-fd/rkfd_sim.h>
+#include <roki_fd/rkfd_defs.h>
+#include <roki_fd/rkfd_sim.h>
 
 /* solver */
-#include <roki-fd/rkfd_vert.h>
-#include <roki-fd/rkfd_volume.h>
-#include <roki-fd/rkfd_mlcp.h>
+#include <roki_fd/rkfd_vert.h>
+#include <roki_fd/rkfd_volume.h>
+#include <roki_fd/rkfd_mlcp.h>
 
 #endif /* __ROKI_FD_H__ */

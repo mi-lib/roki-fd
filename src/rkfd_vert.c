@@ -5,10 +5,10 @@
  * contributer: 2014- Naoki Wakisaka
  */
 
-#include <roki-fd/rkfd_util.h>
-#include <roki-fd/rkfd_vert.h>
-#include <roki-fd/rkfd_penalty.h>
-#include <roki-fd/rkfd_opt_qp.h>
+#include <roki_fd/rkfd_util.h>
+#include <roki_fd/rkfd_vert.h>
+#include <roki_fd/rkfd_penalty.h>
+#include <roki_fd/rkfd_opt_qp.h>
 
 /* the friction states are determined based on the computed friction forces one step before.
  * the direction of the kinetic friction is not fixed.

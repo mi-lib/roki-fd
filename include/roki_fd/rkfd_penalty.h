@@ -8,12 +8,12 @@
 #ifndef __RKFD_PENALTY_H__
 #define __RKFD_PENALTY_H__
 
-#include <roki-fd/rkfd_solver.h>
+#include <roki_fd/rkfd_solver.h>
 
 __BEGIN_DECLS
 
-__EXPORT void rkFDSolverPenalty(rkFDSolver *solver, bool doUpRef);
-__EXPORT void rkFDSolverPenaltyVolumeBased(rkFDSolver *solver, bool doUpRef);
+__ROKI_FD_EXPORT void rkFDSolverPenalty(rkFDSolver *solver, bool doUpRef);
+__ROKI_FD_EXPORT void rkFDSolverPenaltyVolumeBased(rkFDSolver *solver, bool doUpRef);
 
 __END_DECLS
 

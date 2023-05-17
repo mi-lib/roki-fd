@@ -10,10 +10,11 @@
 
 #include <zm/zm_mat.h>
 #include <zeda/zeda_index.h>
+#include <roki_fd/rkfd_defs.h>
 
 __BEGIN_DECLS
 
-__EXPORT bool rkFDQPSolveASM(zMat q, zVec c, zMat a, zVec b, zVec ans, zIndex idx, zVec init(zMat,zVec,zVec,void*), double cond(zMat,zVec,int,void*), void *util);
+__ROKI_FD_EXPORT bool rkFDQPSolveASM(zMat q, zVec c, zMat a, zVec b, zVec ans, zIndex idx, zVec init(zMat,zVec,zVec,void*), double cond(zMat,zVec,int,void*), void *util);
 
 __END_DECLS
 

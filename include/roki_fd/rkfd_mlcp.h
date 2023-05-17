@@ -10,7 +10,7 @@
 
 /* NOTE: never include this header file in user programs. */
 
-#include <roki-fd/rkfd_solver.h>
+#include <roki_fd/rkfd_solver.h>
 #include <roki/rk_force.h>
 
 __BEGIN_DECLS
