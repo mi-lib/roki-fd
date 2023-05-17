@@ -1,16 +1,16 @@
 /* RoKi-FD - Robot Kinetics library: forward dynamics extention
  * Copyright (C) 1998 Tomomichi Sugihara (Zhidao)
  *
- * rkfd_volume - volumetric contact model
+ * rkfd_vert - vertex / plane contact model
  * contributer: 2014- Naoki Wakisaka
  */
 
-#ifndef __RKFD_VOLUME_H__
-#define __RKFD_VOLUME_H__
+#ifndef __RKFD_VERT_H__
+#define __RKFD_VERT_H__
 
 /* NOTE: never include this header file in user programs. */
 
-#include <roki-fd/rkfd_solver.h>
+#include <roki_fd/rkfd_solver.h>
 #include <roki/rk_force.h>
 
 __BEGIN_DECLS
@@ -20,22 +20,18 @@ typedef struct{
   zMat a;
   zVec b, t;
 
-  int fsize, csize;
+  int qp_size;
   zMat q, nf;
   zVec c, d, f;
   zIndex idx;
 
   zVec sc_table[2];
   rkWrench *w[2];
+} rkFDSolverPrpVert;
 
-  int pvsize;
-  zMat ma;
-  zVec mb, mc, mf;
-} rkFDSolverPrpVolume;
-
-RKFD_SOLVER_FUNCTION_DEFAULT( Volume )
-RKFD_SOLVER_CREATE_DEFAULT( Volume )
+RKFD_SOLVER_FUNCTION_DEFAULT( Vert )
+RKFD_SOLVER_CREATE_DEFAULT( Vert )
 
 __END_DECLS
 
-#endif /* __RKFD_VOLUME_H__ */
+#endif /* __RKFD_VERT_H__ */

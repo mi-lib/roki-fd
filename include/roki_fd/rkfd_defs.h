@@ -10,6 +10,8 @@
 
 #include <zeda/zeda.h>
 
+#include <roki_fd/roki_fd_export.h>
+
 #define RK_FD_DT_DEFAULT                        0.001
 #define RK_FD_CDT_DEFAULT                       0.002
 #define RK_FD_JOINT_COMP_K_DEFAULT            100

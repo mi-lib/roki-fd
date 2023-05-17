@@ -9,8 +9,8 @@
 /* CLASS: rkFD
    forward dynamics class
  * ********************************************************** */
-#include <roki-fd/roki-fd.h>
-#include <roki-fd/rkfd_util.h>
+#include <roki_fd/roki_fd.h>
+#include <roki_fd/rkfd_util.h>
 #include <roki/rk_abi.h>
 
 #define rkChainUpdateRateGrav(c) \

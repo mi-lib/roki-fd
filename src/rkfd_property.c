@@ -5,7 +5,7 @@
  * contributer: 2014- Naoki Wakisaka
  */
 
-#include <roki-fd/rkfd_property.h>
+#include <roki_fd/rkfd_property.h>
 
 bool rkFDPrpInit(rkFDPrp *prp)
 {

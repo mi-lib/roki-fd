@@ -8,7 +8,7 @@
 #ifndef __RKFD_PROPERTY_H__
 #define __RKFD_PROPERTY_H__
 
-#include <roki-fd/rkfd_defs.h>
+#include <roki_fd/rkfd_defs.h>
 
 __BEGIN_DECLS
 
@@ -33,8 +33,8 @@ typedef struct{
 #define rkFDPrpSetMaxIter(f,i)        ( (f)->prp.max_iter = (i) )
 #define rkFDPrpSetVelEps(f,e)         ( (f)->prp.vel_eps = (e) )
 
-__EXPORT bool rkFDPrpInit(rkFDPrp *prp);
-__EXPORT void rkFDPrpDestroy(rkFDPrp *prp);
+__ROKI_FD_EXPORT bool rkFDPrpInit(rkFDPrp *prp);
+__ROKI_FD_EXPORT void rkFDPrpDestroy(rkFDPrp *prp);
 
 __END_DECLS
 

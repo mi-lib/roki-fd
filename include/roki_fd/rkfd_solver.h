@@ -8,9 +8,9 @@
 #ifndef __RKFD_SOLVER_H__
 #define __RKFD_SOLVER_H__
 
-#include <roki-fd/rkfd_property.h>
-#include <roki-fd/rkfd_chain.h>
-#include <roki-fd/rkfd_cd.h>
+#include <roki_fd/rkfd_property.h>
+#include <roki_fd/rkfd_chain.h>
+#include <roki_fd/rkfd_cd.h>
 
 __BEGIN_DECLS
 
@@ -48,9 +48,9 @@ typedef struct _rkFDSolver{
 #define rkFDSolverChain(s,i) ( *zArrayElem(&(s)->chains,i) )
 #define rkFDSolverIsEmpty(s) ( (s)->prp == NULL && (s)->com == NULL )
 
-__EXPORT void rkFDSolverInit(rkFDSolver *solver);
-__EXPORT void rkFDSolverReset(rkFDSolver *solver);
-__EXPORT void rkFDSolverDestroy(rkFDSolver *solver);
+__ROKI_FD_EXPORT void rkFDSolverInit(rkFDSolver *solver);
+__ROKI_FD_EXPORT void rkFDSolverReset(rkFDSolver *solver);
+__ROKI_FD_EXPORT void rkFDSolverDestroy(rkFDSolver *solver);
 
 #define rkFDSolverGetDefaultContactInfo(s,c) (s)->com->_defci(s,c)
 #define rkFDSolverUpdateInit(s)              (s)->com->_init(s)

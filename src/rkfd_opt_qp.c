@@ -5,7 +5,7 @@
  * contributer: 2014- Naoki Wakisaka
  */
 
-#include <roki-fd/rkfd_opt_qp.h>
+#include <roki_fd/rkfd_opt_qp.h>
 #include <zm/zm_opt.h>
 
 typedef struct{ /* list of active set indices */

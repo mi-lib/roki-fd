@@ -5,8 +5,8 @@
  * contributer: 2014- Naoki Wakisaka
  */
 
-#include <roki-fd/rkfd_util.h>
-#include <roki-fd/rkfd_array.h>
+#include <roki_fd/rkfd_util.h>
+#include <roki_fd/rkfd_array.h>
 #include <roki/rk_abi.h>
 
 /******************************************************************************/
