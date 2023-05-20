@@ -1,3 +1,4 @@
+2023. 5.20. Reflected new specification of zeda-makefile-gen, and modified src/makefile. [src]
 2023. 5.17. Corrected makefile for examples. [example]
 2023. 5.17. Replaced __EXPORT to __ROKI_FD_EXPORT. [all]
 2023. 5.17. Renamed PROJNAME from roki-fd to roki_fd. [all]
