@@ -1,3 +1,4 @@
+2023. 6. 1. Reflected modification of zeda-makefile-gen to keep roki_fd_export.h. [roki_fd_export]
 2023. 5.20. Reflected new specification of zeda-makefile-gen, and modified src/makefile. [src]
 2023. 5.17. Corrected makefile for examples. [example]
 2023. 5.17. Replaced __EXPORT to __ROKI_FD_EXPORT. [all]
