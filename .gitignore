@@ -14,4 +14,3 @@ tools/*
 example/*/
 !example/model/
 !example/*/*.c
-include/*/*_export.h
