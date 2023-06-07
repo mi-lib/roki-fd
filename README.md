@@ -1,9 +1,9 @@
 RoKi-FD - Robot Simulation library  
 Copyright (C) 2018 Tomomichi Sugihara (Zhidao)
 
-| *master* | *develop* |
-|----------|-----------|
-| [![Build Status](https://travis-ci.org/n-wakisaka/roki-fd.svg?branch=master)](https://travis-ci.org/n-wakisaka/roki-fd) | [![Build Status](https://travis-ci.org/n-wakisaka/roki-fd.svg?branch=develop)](https://travis-ci.org/n-wakisaka/roki-fd)
+| *master* |
+|----------|
+| ![Build Status](https://github.com/mi-lib/roki-fd/actions/workflows/build.yml/badge.svg) |
 
 # What is this?
 
