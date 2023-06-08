@@ -3,7 +3,7 @@ Copyright (C) 2018 Tomomichi Sugihara (Zhidao)
 
 | *master* |
 |----------|
-| ![Build Status](https://github.com/mi-lib/roki-fd/actions/workflows/build.yml/badge.svg) |
+| [![CI-build](https://github.com/mi-lib/roki-fd/actions/workflows/build.yml/badge.svg)](https://github.com/mi-lib/roki-fd/actions/workflows/build.yml) |
 
 # What is this?
 
