@@ -64,10 +64,12 @@ static bool _rkFDSolverPrpReAllocQPCondition(rkFDSolver *s)
 {
   int fnum = 6*rkFDCDRigidNum(s->cd);
   int cnum = rkFDCDRigidNum(s->cd) + _prp(s)->colnum;
+  int nfnum = fnum * cnum;
 
-  if( _prp(s)->fsize * _prp(s)->csize < fnum * cnum ){
+  if( _prp(s)->nfsize < nfnum ){
     zMatFree( _prp(s)->nf );
     _prp(s)->nf = zMatAlloc( cnum, fnum );
+    _prp(s)->nfsize = nfnum;
     if( !_prp(s)->nf )
       return false;
   } else
@@ -973,8 +975,9 @@ bool rkFDSolverUpdateInit_Volume(rkFDSolver *s)
   _prp(s)->b = NULL;
   _prp(s)->t = NULL;
 
-  _prp(s)->fsize = 0;
-  _prp(s)->csize = 0;
+  _prp(s)->fsize  = 0;
+  _prp(s)->csize  = 0;
+  _prp(s)->nfsize = 0;
   _prp(s)->q   = NULL;
   _prp(s)->nf  = NULL;
   _prp(s)->c   = NULL;
