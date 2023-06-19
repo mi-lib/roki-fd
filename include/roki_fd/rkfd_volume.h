@@ -20,7 +20,7 @@ typedef struct{
   zMat a;
   zVec b, t;
 
-  int fsize, csize;
+  int fsize, csize, nfsize;
   zMat q, nf;
   zVec c, d, f;
   zIndex idx;

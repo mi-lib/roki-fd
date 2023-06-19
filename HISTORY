@@ -1,3 +1,4 @@
+2023. 6.19. Debugged _rkFDSolverPrpReAllocQPCondition [rkfd_volume]
 2023. 6. 5. Changed the CI service from Travis CI to GitHub Actions. [.github]
 2023. 6. 1. Reflected modification of zeda-makefile-gen to keep roki_fd_export.h. [roki_fd_export]
 2023. 5.20. Reflected new specification of zeda-makefile-gen, and modified src/makefile. [src]
