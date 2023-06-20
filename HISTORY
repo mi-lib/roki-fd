@@ -1,3 +1,5 @@
+2023. 6.20. Modified arm_box_trq_test and arm_wall_test in example to conform to the current RoKi (thanks to Daishi Kaneta). [example]
+2023. 6.20. Renamed project name back from roki_fd to roki-fd. [all]
 2023. 6.19. Debugged _rkFDSolverPrpReAllocQPCondition [rkfd_volume]
 2023. 6. 5. Changed the CI service from Travis CI to GitHub Actions. [.github]
 2023. 6. 1. Reflected modification of zeda-makefile-gen to keep roki_fd_export.h. [roki_fd_export]

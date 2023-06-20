@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
   fp[1] = fopen( "box.zvs", "w" );
 
   rkFDCreate( &fd );
-	rkFDContactInfoScanFile( &fd, "../model/contactinfo.ztk" );
+  rkFDContactInfoScanFile( &fd, "../model/contactinfo.ztk" );
 
   cell[0] = rkFDChainRegFile( &fd, "../model/arm_2DoF_trq.ztk" );
   cell[1] = rkFDChainRegFile( &fd, "../model/box.ztk" );
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
   rkFDUpdateDestroy( &fd );
 
   zVecFreeAO( 2, dis[0], dis[1] );
-  rkFDDestroy(&fd);
+  rkFDDestroy( &fd );
   fclose( fp[0] );
   fclose( fp[1] );
   return 0;
