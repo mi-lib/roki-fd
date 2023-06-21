@@ -1,5 +1,3 @@
-include ../config
-
 INCLUDE=`roki-fd-config -I`
 LIB=`roki-fd-config -L`
 LINK=`roki-fd-config -l`
