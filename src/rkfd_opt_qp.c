@@ -26,7 +26,7 @@ static double _rkFDQPSolveASMConditionDefault(zMat a, zVec ans, int i, void *uti
 
 static uint _rkFDQPSolveASMInitIndex(zIndex idx, zMat a, zVec b, zVec ans, void *util, double cond(zMat,zVec,int,void*))
 {
-  uint m, i;
+  int m, i;
 
   /* initialize the active set of constraints */
   for( m=0, i=0; i<zVecSizeNC(b); i++ ){
@@ -48,9 +48,9 @@ bool rkFDQPSolveASM(zMat q, zVec c, zMat a, zVec b, zVec ans, zIndex idx, zVec i
   _rkFDQPASMIndexList ilist;
   _rkFDQPASMIndex *idata;
   bool endflag, ret = true;
-  uint tempi;
-  uint n, nm, m;
-  uint i, j, k;
+  int tempi;
+  int n, nm, m;
+  int i, j, k;
 
   /* function settings */
   if( !init ) init = _rkFDQPSolveASMInitDefault;
