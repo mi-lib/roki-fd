@@ -164,7 +164,7 @@ rkFDCellDat *_rkFDCellDatJointFrictionPivotInit(rkFDCellDat *ld)
   for( i=0; i<rkChainLinkNum(rkFDCellDatChain(ld)); i++ ){
     joint = rkChainLinkJoint(&ld->fc.chain,i);
     rkJointGetDis( joint, val );
-    for( j=0; j<rkJointSize(joint); j++ ){
+    for( j=0; j<rkJointDOF(joint); j++ ){
       jfp[j].ref_dis = val[j];
       jfp[j].prev_trq = 0.0;
       jfp[j].type = RK_CONTACT_SF;

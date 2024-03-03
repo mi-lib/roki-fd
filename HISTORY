@@ -1,3 +1,4 @@
+2024. 3. 4. Reflected renaming of rkJointDOF. [rkfd_util, rkfd_sim]
 2023. 6.21. Separated config and libinfo. [all]
 2023. 6.20. Modified arm_box_trq_test and arm_wall_test in example to conform to the current RoKi (thanks to Daishi Kaneta). [example]
 2023. 6.20. Renamed project name back from roki_fd to roki-fd. [all]

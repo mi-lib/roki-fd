@@ -301,7 +301,7 @@ void rkFDUpdateJointPrevDrivingTrq(rkFDChainArray *chains)
       rkJointGetFrictionPivot( joint, jfp );
       rkJointGetFriction( joint, tf );
       rkJointMotorDrivingTrq( joint, val );
-      for( j=0; j<rkJointSize(joint); j++ ){
+      for( j=0; j<rkJointDOF(joint); j++ ){
         jfp[j].prev_trq = val[j] + tf[j];
       }
       rkJointSetFrictionPivot( joint, jfp );
@@ -321,7 +321,7 @@ void rkFDJointFrictionAll(rkJoint *joint, double weight)
 
   rkJointGetKFriction( joint, kf );
   rkJointGetVel( joint, v );
-  for( i=0; i<rkJointSize(joint); i++ )
+  for( i=0; i<rkJointDOF(joint); i++ )
     kf[i] *= rkFDKineticFrictionWeight( weight, fabs(v[i]) );
   rkJointSetFriction( joint, kf );
 }
@@ -372,13 +372,12 @@ void rkFDJointFriction(rkFDChainArray *chains, double dt, double weight, bool do
 
   rkFDArrayForEach( chains, fdc ){
     chain = rkFDChainBase( *fdc );
-    if( rkChainJointSize( chain ) == 0 ) continue;
     for( i=0; i<rkChainLinkNum(chain); i++ ){
       joint = rkChainLinkJoint(chain,i);
       /* 1DoF joint and DC motor only */
-      if( rkJointSize(joint) == 1 ){
-        motor = rkJointGetMotor( joint );
-        if( motor->com == &rk_motor_dc )
+      if( rkJointDOF(joint) == 1 ){
+        motor = rkJointMotor( joint );
+        if( motor->spec->com == &rk_motor_dc )
           rkFDJointFrictionRevolDC( joint, dt, doUpRef );
       } else
         rkFDJointFrictionAll( joint, weight );
