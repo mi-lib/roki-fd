@@ -1,3 +1,4 @@
+2024. 3. 4. Reflected renaming of rkJointDOF. [rkfd_util, rkfd_sim]
 2023. 7.29. Corrected right_sole of example/model/mighty.ztk. [example]
 2023. 6.21. Corrected signedness of integer variables in _rkFDQPSolveASMInitIndex and rkFDQPSolveASM. [rkfd_opt_qp]
 2023. 6.21. Separated config and libinfo. [all]
