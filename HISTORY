@@ -1,3 +1,5 @@
+2024. 5.13. Added DEPENDENCY in config.app. [app]
+2024. 5.13. Added STD in config.org. [config]
 2024. 5.13. Put config.app in app. [app]
 2024. 3. 4. Reflected renaming of rkJointDOF. [rkfd_util, rkfd_sim]
 2023. 7.29. Corrected right_sole of example/model/mighty.ztk. [example]
