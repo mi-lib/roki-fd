@@ -32,7 +32,7 @@ static bool _rkFDSolverPrpReAlloc(rkFDSolver *s)
 
   if( _prp(s)->size < _prp(s)->colnum ){
     zMatFree( _prp(s)->a );
-    zVecFreeAO( 3, _prp(s)->b, _prp(s)->t, _prp(s)->f );
+    zVecFreeAtOnce( 3, _prp(s)->b, _prp(s)->t, _prp(s)->f );
 
     _prp(s)->size = _prp(s)->colnum;
     _prp(s)->a    = zMatAllocSqr( fnum );
@@ -41,7 +41,7 @@ static bool _rkFDSolverPrpReAlloc(rkFDSolver *s)
     _prp(s)->f    = zVecAlloc( fnum );
     if( !_prp(s)->a || !_prp(s)->b || !_prp(s)->t || !_prp(s)->f ){
       zMatFree( _prp(s)->a );
-      zVecFreeAO( 3, _prp(s)->b, _prp(s)->t, _prp(s)->f );
+      zVecFreeAtOnce( 3, _prp(s)->b, _prp(s)->t, _prp(s)->f );
       return false;
     }
   } else{
@@ -350,7 +350,7 @@ void rkFDSolverUpdatePrevDrivingTrq_MLCP(rkFDSolver *s)
 void rkFDSolverUpdateDestroy_MLCP(rkFDSolver *s)
 {
   zMatFree( _prp(s)->a );
-  zVecFreeAO( 3, _prp(s)->b, _prp(s)->t, _prp(s)->f );
+  zVecFreeAtOnce( 3, _prp(s)->b, _prp(s)->t, _prp(s)->f );
   zFree( _prp(s)->w[0] );
   zFree( _prp(s)->w[1] );
 }

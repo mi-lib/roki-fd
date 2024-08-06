@@ -1,3 +1,5 @@
+2024. 8. 6. Modified makefile in example to enable batch compilation of all examples in the same directory. [example]
+2024. 8. 6. Reflect renaming of zVecFreeAtOnce and zMatFreeAtOnce. [rkfd_util, rkfd_sim, rkfd_opt_qp, rkfd_vert, rkfd_volume, rkfd_mlcp, example]
 2024. 5.13. Added DEPENDENCY in config.app. [app]
 2024. 5.13. Added STD in config.org. [config]
 2024. 5.13. Put config.app in app. [app]

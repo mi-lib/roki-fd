@@ -34,8 +34,8 @@ static bool _rkFDSolverPrpReAllocQP(rkFDSolver *s)
   int fnum = 6*rkFDCDRigidNum(s->cd);
 
   if( _prp(s)->fsize < fnum ){
-    zMatFreeAO( 2, _prp(s)->a, _prp(s)->q );
-    zVecFreeAO( 4, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->f );
+    zMatFreeAtOnce( 2, _prp(s)->a, _prp(s)->q );
+    zVecFreeAtOnce( 4, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->f );
 
     _prp(s)->fsize = fnum;
     _prp(s)->a = zMatAllocSqr( fnum );
@@ -45,8 +45,8 @@ static bool _rkFDSolverPrpReAllocQP(rkFDSolver *s)
     _prp(s)->c = zVecAlloc( fnum );
     _prp(s)->f = zVecAlloc( fnum );
     if( !_prp(s)->a || !_prp(s)->q || !_prp(s)->b || !_prp(s)->t || !_prp(s)->c || !_prp(s)->f ){
-      zMatFreeAO( 2, _prp(s)->a, _prp(s)->q );
-      zVecFreeAO( 4, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->f );
+      zMatFreeAtOnce( 2, _prp(s)->a, _prp(s)->q );
+      zVecFreeAtOnce( 4, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->f );
       return false;
     }
   } else {
@@ -103,14 +103,14 @@ static bool _rkFDSolverPrpReAllocModification(rkFDSolver *s)
 
   if( _prp(s)->pvsize < pvnum ){
     zMatFree( _prp(s)->ma );
-    zVecFreeAO( 2, _prp(s)->mc, _prp(s)->mf );
+    zVecFreeAtOnce( 2, _prp(s)->mc, _prp(s)->mf );
 
     _prp(s)->ma = zMatAlloc( 6, rkFDPrpPyramid(s->fdprp) * pvnum );
     _prp(s)->mc = zVecAlloc( pvnum );
     _prp(s)->mf = zVecAlloc( rkFDPrpPyramid(s->fdprp) * pvnum );
     if( !_prp(s)->ma || !_prp(s)->mc || !_prp(s)->mf ){
       zMatFree( _prp(s)->ma );
-      zVecFreeAO( 2, _prp(s)->mc, _prp(s)->mf );
+      zVecFreeAtOnce( 2, _prp(s)->mc, _prp(s)->mf );
       return false;
     }
   }
@@ -1025,14 +1025,14 @@ void rkFDSolverUpdatePrevDrivingTrq_Volume(rkFDSolver *s)
 
 void rkFDSolverUpdateDestroy_Volume(rkFDSolver *s)
 {
-  zMatFreeAO( 3, _prp(s)->a, _prp(s)->q, _prp(s)->nf );
-  zVecFreeAO( 7, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->d, _prp(s)->f, _prp(s)->sc_table[0], _prp(s)->sc_table[1] );
+  zMatFreeAtOnce( 3, _prp(s)->a, _prp(s)->q, _prp(s)->nf );
+  zVecFreeAtOnce( 7, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->d, _prp(s)->f, _prp(s)->sc_table[0], _prp(s)->sc_table[1] );
   zFree( _prp(s)->w[0] );
   zFree( _prp(s)->w[1] );
   zIndexFree( _prp(s)->idx );
 
   zMatFree( _prp(s)->ma );
-  zVecFreeAO( 3, _prp(s)->mb, _prp(s)->mc, _prp(s)->mf );
+  zVecFreeAtOnce( 3, _prp(s)->mb, _prp(s)->mc, _prp(s)->mf );
 }
 
 RKFD_SOLVER_DEFAULT_GENERATOR( Volume )
