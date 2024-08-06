@@ -176,6 +176,6 @@ bool rkFDQPSolveASM(zMat q, zVec c, zMat a, zVec b, zVec ans, zIndex idx, zVec i
     zIndexFree( idata->data.idx );
   zListDestroy( _rkFDQPASMIndex, &ilist );
   zMatFree( qa );
-  zVecFreeAO( 3, xy, cb, d );
+  zVecFreeAtOnce( 3, xy, cb, d );
   return ret;
 }

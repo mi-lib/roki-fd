@@ -196,19 +196,20 @@ double rkFDKineticFrictionWeight(double w, double fs)
 }
 
 /* sin cos table */
-bool rkFDCrateSinCosTable(zVec table[2], int num, double offset){
-	int i;
-	double th, dth;
+bool rkFDCrateSinCosTable(zVec table[2], int num, double offset)
+{
+  int i;
+  double th, dth;
 
-	table[0] = zVecAlloc( num );
-	table[1] = zVecAlloc( num );
+  table[0] = zVecAlloc( num );
+  table[1] = zVecAlloc( num );
   if( table[0] == NULL || table[1] == NULL ){
-    zVecFreeAO( 2, table[0], table[1] );
+    zVecFreeAtOnce( 2, table[0], table[1] );
     return false;
   }
-	dth = zDeg2Rad( 360 ) / num;
-	for( i=0,th=0.0; i<num; i++,th+=dth )
-		zSinCos( th+offset, &zVecElemNC(table[0],i), &zVecElemNC(table[1],i) );
+  dth = zDeg2Rad( 360 ) / num;
+  for( i=0,th=0.0; i<num; i++,th+=dth )
+    zSinCos( th+offset, &zVecElemNC(table[0],i), &zVecElemNC(table[1],i) );
   return true;
 }
 
