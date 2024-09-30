@@ -58,7 +58,7 @@ void rkFDDestroy(rkFD *fd)
   rkFDCell *lc;
 
   rkFDSolverDestroy( &fd->solver );
-  zVecFreeAO( 3, fd->dis, fd->vel, fd->acc );
+  zVecFreeAtOnce( 3, fd->dis, fd->vel, fd->acc );
   rkFDCDDestroy( &fd->cd );
   rkContactInfoArrayDestroy( &fd->ci );
   while( !zListIsEmpty( &fd->list ) ){
@@ -91,14 +91,14 @@ bool _rkFDAllocJointStatePush(rkFD *fd, rkFDCell *rlc)
       !( fd->acc = zVecAlloc( fd->size+size ) ) ){
     fd->size = 0;
     ZALLOCERROR();
-    zVecFreeAO( 5, pdis, pvel, fd->dis, fd->vel, fd->acc );
+    zVecFreeAtOnce( 5, pdis, pvel, fd->dis, fd->vel, fd->acc );
     return false;
   }
 
   if( fd->size ){
     zRawVecCopy( zVecBufNC(pdis), zVecBufNC(fd->dis), fd->size );
     zRawVecCopy( zVecBufNC(pvel), zVecBufNC(fd->vel), fd->size );
-    zVecFreeAO( 2, pdis, pvel );
+    zVecFreeAtOnce( 2, pdis, pvel );
   }
 
   zListForEach( &fd->list, lc ){
@@ -119,7 +119,7 @@ bool _rkFDAllocJointStatePop(rkFD *fd, rkFDCell *rlc)
   zVecFree( fd->acc );
   if( fd->size - size <= 0 ){
     fd->size = 0;
-    zVecFreeAO( 2, fd->dis, fd->vel );
+    zVecFreeAtOnce( 2, fd->dis, fd->vel );
     fd->dis = NULL;
     fd->vel = NULL;
     fd->acc = NULL;
@@ -132,7 +132,7 @@ bool _rkFDAllocJointStatePop(rkFD *fd, rkFDCell *rlc)
       !( fd->acc = zVecAlloc( fd->size-size ) ) ){
     ZALLOCERROR();
     fd->size = 0;
-    zVecFreeAO( 5, pdis, pvel, fd->dis, fd->vel, fd->acc );
+    zVecFreeAtOnce( 5, pdis, pvel, fd->dis, fd->vel, fd->acc );
     return false;
   }
 
@@ -150,7 +150,7 @@ bool _rkFDAllocJointStatePop(rkFD *fd, rkFDCell *rlc)
   }
   fd->size -= size;
 
-  zVecFreeAO( 2, pdis, pvel );
+  zVecFreeAtOnce( 2, pdis, pvel );
   return true;
 }
 

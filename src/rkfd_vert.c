@@ -35,8 +35,8 @@ static bool _rkFDSolverPrpReAlloc(rkFDSolver *s)
   int cnum = rkFDPrpPyramid(s->fdprp) * _prp(s)->colnum;
 
   if( _prp(s)->qp_size < _prp(s)->colnum ){
-    zMatFreeAO( 3, _prp(s)->a, _prp(s)->q, _prp(s)->nf );
-    zVecFreeAO( 5, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->d, _prp(s)->f );
+    zMatFreeAtOnce( 3, _prp(s)->a, _prp(s)->q, _prp(s)->nf );
+    zVecFreeAtOnce( 5, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->d, _prp(s)->f );
     zIndexFree( _prp(s)->idx );
 
     _prp(s)->qp_size = _prp(s)->colnum;
@@ -50,8 +50,8 @@ static bool _rkFDSolverPrpReAlloc(rkFDSolver *s)
     _prp(s)->d       = zVecAlloc( cnum );
     _prp(s)->idx     = zIndexCreate( cnum );
     if( !_prp(s)->a || !_prp(s)->q || !_prp(s)->nf || !_prp(s)->b || !_prp(s)->t || !_prp(s)->c || !_prp(s)->d || !_prp(s)->f || !_prp(s)->idx ){
-      zMatFreeAO( 3, _prp(s)->a, _prp(s)->q, _prp(s)->nf );
-      zVecFreeAO( 5, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->d, _prp(s)->f );
+      zMatFreeAtOnce( 3, _prp(s)->a, _prp(s)->q, _prp(s)->nf );
+      zVecFreeAtOnce( 5, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->d, _prp(s)->f );
       zIndexFree( _prp(s)->idx );
       return false;
     }
@@ -393,8 +393,8 @@ void rkFDSolverUpdatePrevDrivingTrq_Vert(rkFDSolver *s)
 }
 
 void rkFDSolverUpdateDestroy_Vert(rkFDSolver *s){
-  zMatFreeAO( 3, _prp(s)->a, _prp(s)->q, _prp(s)->nf );
-  zVecFreeAO( 7, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->d, _prp(s)->f, _prp(s)->sc_table[0], _prp(s)->sc_table[1] );
+  zMatFreeAtOnce( 3, _prp(s)->a, _prp(s)->q, _prp(s)->nf );
+  zVecFreeAtOnce( 7, _prp(s)->b, _prp(s)->t, _prp(s)->c, _prp(s)->d, _prp(s)->f, _prp(s)->sc_table[0], _prp(s)->sc_table[1] );
   zFree( _prp(s)->w[0] );
   zFree( _prp(s)->w[1] );
   zIndexFree( _prp(s)->idx );

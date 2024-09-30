@@ -203,7 +203,7 @@ bool rkFDCrateSinCosTable(zVec table[2], int num, double offset){
 	table[0] = zVecAlloc( num );
 	table[1] = zVecAlloc( num );
   if( table[0] == NULL || table[1] == NULL ){
-    zVecFreeAO( 2, table[0], table[1] );
+    zVecFreeAtOnce( 2, table[0], table[1] );
     return false;
   }
 	dth = zDeg2Rad( 360 ) / num;

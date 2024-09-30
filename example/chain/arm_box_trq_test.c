@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
   }
   rkFDUpdateDestroy( &fd );
 
-  zVecFreeAO( 2, dis[0], dis[1] );
+  zVecFreeAtOnce( 2, dis[0], dis[1] );
   rkFDDestroy( &fd );
   fclose( fp[0] );
   fclose( fp[1] );
