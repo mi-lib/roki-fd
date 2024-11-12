@@ -5,6 +5,7 @@ GPATH
 GRTAGS
 GSYMS
 GTAGS
+include/*/*_export.h
 app/*
 !app/*.c
 !app/makefile
@@ -15,3 +16,4 @@ tools/*
 example/*/
 !example/model/
 !example/*/*.c
+test/test.log

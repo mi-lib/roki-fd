@@ -1,3 +1,4 @@
+2024.11.12. Modified .gitignore. [all]
 2024.10.29. Reflected new tags of Zeo and RoKi for ZTK. [example]
 2024. 8. 6. Modified makefile in example to enable batch compilation of all examples in the same directory. [example]
 2024. 8. 6. Reflect renaming of zVecFreeAtOnce and zMatFreeAtOnce. [rkfd_util, rkfd_sim, rkfd_opt_qp, rkfd_vert, rkfd_volume, rkfd_mlcp, example]
