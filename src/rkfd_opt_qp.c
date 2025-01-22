@@ -30,7 +30,7 @@ static uint _rkFDQPSolveASMInitIndex(zIndex idx, zMat a, zVec b, zVec ans, void 
 
   /* initialize the active set of constraints */
   for( m=0, i=0; i<zVecSizeNC(b); i++ ){
-    if( zIsEqual( cond( a, ans, i, util ), zVecElemNC(b,i), zTOL ) ){
+    if( zEqual( cond( a, ans, i, util ), zVecElemNC(b,i), zTOL ) ){
       zIndexElemNC(idx,i) = 1;
       m++;
     } else
@@ -107,7 +107,7 @@ bool rkFDQPSolveASM(zMat q, zVec c, zMat a, zVec b, zVec ans, zIndex idx, zVec i
     zLESolveMP( qa, cb, NULL, NULL, xy );
 
     for( i=0; i<n; i++ )
-      if( !zIsEqual( zVecElemNC(xy,i), zVecElemNC(ans,i), zTOL ) ) goto STEP2;
+      if( !zEqual( zVecElemNC(xy,i), zVecElemNC(ans,i), zTOL ) ) goto STEP2;
     for( i=0; i<n; i++ )
       zVecElemNC(ans,i) = zVecElemNC(xy,i);
     for( i=0; i<m; i++ )
@@ -145,7 +145,7 @@ bool rkFDQPSolveASM(zMat q, zVec c, zMat a, zVec b, zVec ans, zIndex idx, zVec i
     for( i=0; i<n; i++ )
       zVecElemNC(ans,i) += tempd * zVecElemNC(d,i);
     for( i=0; i<zVecSizeNC(b); i++ )
-      if( zIndexElemNC(idx,i) == 0 && zIsEqual( cond( a, ans, i, util ), zVecElemNC(b,i), zTOL ) ){
+      if( zIndexElemNC(idx,i) == 0 && zEqual( cond( a, ans, i, util ), zVecElemNC(b,i), zTOL ) ){
         zIndexElemNC(idx,i) = 1;
         m++;
       }
