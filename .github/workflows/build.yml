@@ -8,10 +8,17 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3  
+      - uses: actions/checkout@v4
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxml2-dev \
+            liblzf-dev
+
       - name: setup env
         run: |
           echo "PREFIX=${HOME}/usr/" >> $GITHUB_ENV
