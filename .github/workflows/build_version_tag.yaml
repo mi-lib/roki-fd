@@ -1,0 +1,37 @@
+name: Build Version Tag
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set git config for github actions bot user
+        run: .github/scripts/set_bot_user_config.sh
+
+      - name: Get versions
+        id: versions
+        run: .github/scripts/version/get_versions.sh
+
+      - name: Set version tags
+        run: |
+          if ${{ steps.versions.outputs.TAG_VERSION == '' }}; then
+            .github/scripts/version/set_version_tags.sh
+
+          elif ${{ steps.versions.outputs.IS_VERSION_UPDATED == 'true' }}; then
+            tag_name="v${{ steps.versions.outputs.VERSION }}"
+            git tag -a $tag_name -m "version ${{ steps.versions.outputs.VERSION }}"
+            git push origin $tag_name
+            echo "Tagged $commit with $tag_name"
+          fi
