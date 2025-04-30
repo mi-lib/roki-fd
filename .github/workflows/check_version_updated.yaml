@@ -1,0 +1,29 @@
+name: Check Version Updated
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get versions
+        id: versions
+        run: .github/scripts/version/get_versions.sh
+
+      - name: Check version updated
+        run: |
+          if [ "${{ steps.versions.outputs.IS_VERSION_UPDATED }}" = "true" ]; then
+            echo "Version is updated"
+          else
+            echo "Version is not updated"
+            exit 1
+          fi

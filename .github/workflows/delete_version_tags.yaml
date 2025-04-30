@@ -1,0 +1,21 @@
+name: Delete Version Tags
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set git config for github actions bot user
+        run: .github/scripts/set_bot_user_config.sh
+
+      - name: Delete version tags
+        run: .github/scripts/version/delete_version_tags.sh
