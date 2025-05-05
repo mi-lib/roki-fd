@@ -46,9 +46,9 @@ jobs:
         with:
           name: env
           path: |
-            ${HOME}/usr/bin
-            ${HOME}/usr/lib
-            ${HOME}/usr/include
+            $HOME/usr/bin
+            $HOME/usr/lib
+            $HOME/usr/include
 
   test:
     runs-on: ubuntu-22.04
@@ -60,7 +60,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: env
-          path: ${HOME}/usr
+          path: $HOME/usr
 
       - name: setup env
         run: |
@@ -81,7 +81,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: env
-          path: ${HOME}/usr
+          path: $HOME/usr
       
       - name: setup env
         run: |
