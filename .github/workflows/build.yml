@@ -40,3 +40,54 @@ jobs:
         
       - name: build
         run: make && make install
+
+      - name: upload env
+        uses: actions/upload-artifact@v4
+        with:
+          name: env
+          path: |
+            ${HOME}/usr/bin
+            ${HOME}/usr/lib
+            ${HOME}/usr/include
+
+  test:
+    runs-on: ubuntu-22.04
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: download env
+        uses: actions/download-artifact@v4
+        with:
+          name: env
+          path: ${HOME}/usr
+
+      - name: setup env
+        run: |
+          echo "PREFIX=${HOME}/usr/" >> $GITHUB_ENV
+          echo "PATH=$PATH:${HOME}/usr/bin" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${HOME}/usr/lib" >> $GITHUB_ENV
+
+      - name: test
+        run: make test
+  
+  build-example:
+    runs-on: ubuntu-22.04
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: download env
+        uses: actions/download-artifact@v4
+        with:
+          name: env
+          path: ${HOME}/usr
+      
+      - name: setup env
+        run: |
+          echo "PREFIX=${HOME}/usr/" >> $GITHUB_ENV
+          echo "PATH=$PATH:${HOME}/usr/bin" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${HOME}/usr/lib" >> $GITHUB_ENV
+
+      - name: build example
+        run: make example
