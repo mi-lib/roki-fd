@@ -22,7 +22,7 @@ jobs:
 
       - name: setup env
         run: |
-          echo "PREFIX=${HOME}/usr/" >> $GITHUB_ENV
+          echo "PREFIX=${HOME}/usr" >> $GITHUB_ENV
           echo "PATH=$PATH:${HOME}/usr/bin" >> $GITHUB_ENV
           echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${HOME}/usr/lib" >> $GITHUB_ENV
           mkdir -p ${HOME}/usr/bin
@@ -46,9 +46,9 @@ jobs:
         with:
           name: env
           path: |
-            $HOME/usr/bin
-            $HOME/usr/lib
-            $HOME/usr/include
+            ${{ env.PREFIX }}/bin
+            ${{ env.PREFIX }}/lib
+            ${{ env.PREFIX }}/include
 
   test:
     runs-on: ubuntu-22.04
