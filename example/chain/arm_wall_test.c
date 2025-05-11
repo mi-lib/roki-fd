@@ -9,7 +9,7 @@
 
 void control(rkFDCell *cell)
 {
-  register int i;
+  int i;
   double dis, vel, e;
   rkJoint *joint;
 
