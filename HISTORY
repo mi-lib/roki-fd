@@ -1,3 +1,4 @@
+2025.05.11. Removed register qualifiers from example codes. [example]
 2025.04.29. Modified makefile to conform to new specification of zeda-makefile-gen. [all]
 2025.04.29. Modified makefile in example. [example]
 2025.01.22. Changed the license from LGPL-3 to MIT license. [all]
