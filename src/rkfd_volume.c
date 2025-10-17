@@ -556,12 +556,12 @@ static void _rkFDSolverSetForce(rkFDSolver *s)
 
   rkFDCDForEachRigidPair( s->cd, pd ){
     if( zListSize(&(*pd)->cplane) == 0 ){
-      zVec6DZero( &(*pd)->f );
+      zVec6DZero( &(*pd)->wrench );
       continue;
     }
-    zVec6DCopy( (zVec6D *)&zVecElemNC(_prp(s)->f,offset), &(*pd)->f );
-    if( zVec3DIsTiny( zVec6DLin(&(*pd)->f) ) || zVec3DInnerProd( zVec6DLin(&(*pd)->f), &(*pd)->norm ) < zTOL ){
-      zVec6DZero( &(*pd)->f );
+    zVec6DCopy( (zVec6D *)&zVecElemNC(_prp(s)->f,offset), &(*pd)->wrench );
+    if( zVec3DIsTiny( zVec6DLin(&(*pd)->wrench) ) || zVec3DInnerProd( zVec6DLin(&(*pd)->wrench), &(*pd)->norm ) < zTOL ){
+      zVec6DZero( &(*pd)->wrench );
     }
     offset += 6;
   }
@@ -572,9 +572,9 @@ static void _rkFDSolverSetForce(rkFDSolver *s)
 
 static void _rkFDSolverModifyNormForceCenterTrq(rkCDPairDat *cpd, zVec3D *r, double fn)
 {
-  zVec3DMul( &cpd->norm, zVec3DInnerProd( &cpd->norm, zVec6DAng(&cpd->f) ), zVec6DAng(&cpd->f) );
-  zVec3DCatDRC( zVec6DAng(&cpd->f),  fn * zVec3DInnerProd( &cpd->axis[2], r ), &cpd->axis[1] );
-  zVec3DCatDRC( zVec6DAng(&cpd->f), -fn * zVec3DInnerProd( &cpd->axis[1], r ), &cpd->axis[2] );
+  zVec3DMul( &cpd->norm, zVec3DInnerProd( &cpd->norm, zVec6DAng(&cpd->wrench) ), zVec6DAng(&cpd->wrench) );
+  zVec3DCatDRC( zVec6DAng(&cpd->wrench),  fn * zVec3DInnerProd( &cpd->axis[2], r ), &cpd->axis[1] );
+  zVec3DCatDRC( zVec6DAng(&cpd->wrench), -fn * zVec3DInnerProd( &cpd->axis[1], r ), &cpd->axis[2] );
 }
 
 static void _rkFDSolverModifyNormalForceCenter(rkFDSolver *solver)
@@ -587,11 +587,11 @@ static void _rkFDSolverModifyNormalForceCenter(rkFDSolver *solver)
 
   rkFDCDForEachRigidPair( solver->cd, pd ){
     /* unilateral constraint */
-    fn = zVec3DInnerProd( &(*pd)->norm, zVec6DLin(&(*pd)->f) );
+    fn = zVec3DInnerProd( &(*pd)->norm, zVec6DLin(&(*pd)->wrench) );
     if( fn < zTOL ) continue;
 
-    zVec3DMul( &(*pd)->axis[1], -zVec3DInnerProd( &(*pd)->axis[2], zVec6DAng(&(*pd)->f) ) / fn, &r0 );
-    zVec3DCatDRC( &r0, zVec3DInnerProd( &(*pd)->axis[1], zVec6DAng(&(*pd)->f) ) / fn, &(*pd)->axis[2] );
+    zVec3DMul( &(*pd)->axis[1], -zVec3DInnerProd( &(*pd)->axis[2], zVec6DAng(&(*pd)->wrench) ) / fn, &r0 );
+    zVec3DCatDRC( &r0, zVec3DInnerProd( &(*pd)->axis[1], zVec6DAng(&(*pd)->wrench) ) / fn, &(*pd)->axis[2] );
     flag = false;
     cdpl[2] = zListHead( &(*pd)->cplane );
     cdpl[1] = zListCellPrev( cdpl[2] );
@@ -859,10 +859,10 @@ static void _rkFDSolverModifyWrenchSetForce(rkCDPairDat *cpd, zVec6D *w)
 {
   int i;
 
-  zVec6DZero( &cpd->f );
+  zVec6DZero( &cpd->wrench );
   for( i=0; i<3; i++ ){
-    zVec3DCatDRC( zVec6DLin(&cpd->f), w->e[i  ], &cpd->axis[i] );
-    zVec3DCatDRC( zVec6DAng(&cpd->f), w->e[i+3], &cpd->axis[i] );
+    zVec3DCatDRC( zVec6DLin(&cpd->wrench), w->e[i  ], &cpd->axis[i] );
+    zVec3DCatDRC( zVec6DAng(&cpd->wrench), w->e[i+3], &cpd->axis[i] );
   }
 }
 
@@ -875,10 +875,10 @@ static void _rkFDSolverModifyWrench(rkFDSolver *s, bool doUpRef)
 
   rkFDCDForEachRigidPair( s->cd, pd ){
     if( zListIsEmpty(&(*pd)->cplane) ) continue;
-    if( zIsTiny( zVec3DInnerProd( zVec6DLin(&(*pd)->f), &(*pd)->axis[0] ) ) ) continue;
+    if( zIsTiny( zVec3DInnerProd( zVec6DLin(&(*pd)->wrench), &(*pd)->axis[0] ) ) ) continue;
     for( i=0; i<3; i++ ){
-      w.e[i  ] = zVec3DInnerProd( zVec6DLin(&(*pd)->f), &(*pd)->axis[i] );
-      w.e[i+3] = zVec3DInnerProd( zVec6DAng(&(*pd)->f), &(*pd)->axis[i] );
+      w.e[i  ] = zVec3DInnerProd( zVec6DLin(&(*pd)->wrench), &(*pd)->axis[i] );
+      w.e[i+3] = zVec3DInnerProd( zVec6DAng(&(*pd)->wrench), &(*pd)->axis[i] );
     }
     /* friction */
     fn = w.e[0];
@@ -927,7 +927,7 @@ static void _rkFDSolverPushWrench(rkFDSolver *s)
       w = zAlloc( rkWrench, 1 );
       rkWrenchInit( w );
       zXform3DInv( rkLinkWldFrame((*pd)->cell[i]->data.link), &(*pd)->center, rkWrenchPos(w) );
-      zMulMat3DTVec6D( rkLinkWldAtt((*pd)->cell[i]->data.link), &(*pd)->f, rkWrenchW(w) );
+      zMulMat3DTVec6D( rkLinkWldAtt((*pd)->cell[i]->data.link), &(*pd)->wrench, rkWrenchW(w) );
       if( i == 1 )
         zVec6DRevDRC( rkWrenchW(w) );
       rkWrenchListPush( rkLinkExtWrenchBuf((*pd)->cell[i]->data.link), w );
