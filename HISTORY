@@ -1,3 +1,4 @@
+2025.11.16. Modified _rkFDSolverConstraintAddQ to reflect renaming of _zVec3DOuterProdToMat3D and _zVec3DTripleProdToMat3D. [rkfd_volume]
 2025.10.17. Reflected renaming of member f to wrench of rkCDPairDat. [rkfd_volume]
 2025.05.11. Removed register qualifiers from example codes. [example]
 2025.04.29. Modified makefile to conform to new specification of zeda-makefile-gen. [all]

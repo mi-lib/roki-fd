@@ -285,10 +285,10 @@ static void _rkFDSolverConstraintAddQ(zVec3D p[], zVec3D pm[], double s, zMat6D 
   _rkFDSolverConstraintAvePoint( p, s, &pc );
   zMat3DMul( ZMAT3DIDENT, s, &tmpm );
   zMat3DAddDRC( &q->e[0][0], &tmpm );
-  _zVec3DOuterProd2Mat3D( &pc, &tmpm );
+  _zVec3DOuterProdToMat3D( &pc, &tmpm );
   zMat3DAddDRC( &q->e[1][0], &tmpm );
   zMat3DSubDRC( &q->e[0][1], &tmpm );
-  for( i=0; i<3; i++ ) _zVec3DTripleProd2Mat3D( &pm[i], &pm[i], &mm[i] );
+  for( i=0; i<3; i++ ) _zVec3DTripleProdToMat3D( &pm[i], &pm[i], &mm[i] );
   _rkFDSolverConstraintAveMat( mm, s, &tmpm );
   zMat3DSubDRC( &q->e[1][1], &tmpm );
 }
