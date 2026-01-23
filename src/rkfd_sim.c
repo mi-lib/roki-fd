@@ -307,13 +307,13 @@ zVec rkFDODECatDefault(zVec x, double k, zVec v, zVec xnew, void *util)
 {
   rkFDCell *lc;
   zVecStruct lv, lxn;
+  int jointsize;
 
   zVecCopyNC( x, xnew );
   zListForEach( &((rkFD *)util)->list, lc ){
-    lv.size  = rkChainJointSize( rkFDCellChain(lc) );
-    lxn.size = rkChainJointSize( rkFDCellChain(lc) );
-    lv.buf   = &zVecElemNC(v,   lc->data._offset);
-    lxn.buf  = &zVecElemNC(xnew,lc->data._offset);
+    jointsize = rkChainJointSize( rkFDCellChain(lc) );
+    zVecAssignArray( &lv,  jointsize, &zVecElemNC(v,   lc->data._offset) );
+    zVecAssignArray( &lxn, jointsize, &zVecElemNC(xnew,lc->data._offset) );
     rkChainCatJointDisAll( rkFDCellChain(lc), &lxn, k, &lv );
   }
   return xnew;
@@ -323,13 +323,13 @@ zVec rkFDODESubDefault(zVec x1, zVec x2, zVec dx, void *util)
 {
   rkFDCell *lc;
   zVecStruct lx2, ldx;
+  int jointsize;
 
   zVecCopyNC( x1, dx );
   zListForEach( &((rkFD *)util)->list, lc ){
-    lx2.size = rkChainJointSize( rkFDCellChain(lc) );
-    ldx.size = rkChainJointSize( rkFDCellChain(lc) );
-    lx2.buf  = &zVecElemNC(x2,lc->data._offset);
-    ldx.buf  = &zVecElemNC(dx,lc->data._offset);
+    jointsize = rkChainJointSize( rkFDCellChain(lc) );
+    zVecAssignArray( &lx2, jointsize, &zVecElemNC(x2,lc->data._offset) );
+    zVecAssignArray( &ldx, jointsize, &zVecElemNC(dx,lc->data._offset) );
     rkChainSubJointDisAll( rkFDCellChain(lc), &ldx, &lx2 );
   }
   return dx;
@@ -347,8 +347,7 @@ void rkFDFK(rkFD *fd, zVec dis)
   zVecStruct ldis;
 
   zListForEach( &fd->list, lc ){
-    ldis.size = rkChainJointSize( rkFDCellChain(lc) );
-    ldis.buf  = &zVecElemNC(dis,lc->data._offset);
+    zVecAssignArray( &ldis, rkChainJointSize( rkFDCellChain(lc) ), &zVecElemNC(dis,lc->data._offset) );
     rkChainFK( rkFDCellChain(lc), &ldis );
   }
 }
@@ -357,11 +356,12 @@ void rkFDUpdateRate(rkFD *fd, zVec vel, zVec acc)
 {
   rkFDCell *lc;
   zVecStruct lvel, lacc;
+  int jointsize;
 
   zListForEach( &fd->list, lc ){
-    lvel.size = lacc.size = rkChainJointSize( rkFDCellChain(lc) );
-    lvel.buf  = &zVecElemNC(vel,lc->data._offset);
-    lacc.buf  = &zVecElemNC(acc,lc->data._offset);
+    jointsize = rkChainJointSize( rkFDCellChain(lc) );
+    zVecAssignArray( &lvel, jointsize, &zVecElemNC(vel,lc->data._offset) );
+    zVecAssignArray( &lacc, jointsize, &zVecElemNC(acc,lc->data._offset) );
     rkChainSetJointRateAll( rkFDCellChain(lc), &lvel, &lacc );
     rkChainUpdateRateGrav( rkFDCellChain(lc) );
   }
@@ -554,7 +554,7 @@ void rkFDUpdateInit(rkFD *fd)
   rkFDCDUpdateInit( &fd->cd );
   _rkFDUpdateInitSolver( fd );
   _rkFDUpdateRef( fd );
-  zODE2Init( &fd->ode, zVecSize( fd->dis ), fd->ode_step, _rkFDUpdate );
+  zODE2Create( &fd->ode, zVecSize( fd->dis ), fd->ode_step, _rkFDUpdate );
 }
 
 rkFD *rkFDUpdate(rkFD *fd)

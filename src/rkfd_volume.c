@@ -509,7 +509,7 @@ static void _rkFDSolverQPCreate(rkFDSolver *s)
     /* q */
     for( i=0; i<6; i++ )
       for( j=0; j<6; j++ )
-        zRawMatCatDyad( zMatBuf(_prp(s)->q), _zMat6DElem(&qv,i,j), zMatRowBuf(_prp(s)->a,offset+i), zMatColSizeNC(_prp(s)->a), zMatRowBuf(_prp(s)->a,offset+j), zMatColSizeNC(_prp(s)->a) );
+        zRawMatCatDyad( zMatBufNC(_prp(s)->q), zMatColCapacity(_prp(s)->q), _zMat6DElem(&qv,i,j), zMatRowBufNC(_prp(s)->a,offset+i), zMatColSizeNC(_prp(s)->a), zMatRowBufNC(_prp(s)->a,offset+j), zMatColSizeNC(_prp(s)->a) );
     /* c */
     zMulMat6DVec6D( &qv, (zVec6D *)&zVecElemNC(_prp(s)->b,offset), &tmpv );
     zVec6DAddDRC( &cv, &tmpv );
