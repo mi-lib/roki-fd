@@ -1,3 +1,6 @@
+2026. 1.23. Modified rkFDODECatDefault, rkFDODESubDefault, rkFDFK, and rkFDUpdateRate to use zVecAssignArray. [rkfd_sim]
+2026. 1.23. Modified rkFDUpdateInit to reflect renaming of zODE2Init to zODE2Create. [rkfd_sim]
+2026. 1.22. Modified _rkFDSolverQPCreate to reflect new specification of zMat. [rkfd_volume]
 2025.12.16. Replaced xargs -i option with -I option. [example]
 2025.11.16. Modified _rkFDSolverConstraintAddQ to reflect renaming of _zVec3DOuterProdToMat3D and _zVec3DTripleProdToMat3D. [rkfd_volume]
 2025.10.17. Reflected renaming of member f to wrench of rkCDPairDat. [rkfd_volume]
