@@ -373,23 +373,23 @@ static void _rkFDSolverSetContactPlane(rkCDPairDat *cpd, zVec3D *p, zVec3D *norm
   zListInsertHead( &cpd->cplane, cdpl );
 }
 
-static int __rk_fd_plane_cmp(void *p1, void *p2, void *priv)
+static int __rk_fd_plane_cmp(rkCDPlane *p1, rkCDPlane *p2, void *priv)
 {
   zVec3D *a, *n, tmp;
   double th1, th2;
 
   n = (zVec3D *)priv;
   a = (zVec3D *)priv + 1;
-  zVec3DOuterProd( a, &((rkCDPlane *)p1)->data.norm, &tmp );
+  zVec3DOuterProd( a, &p1->data.norm, &tmp );
   if( zVec3DInnerProd( &tmp, n ) > 0 )
-    th1 = atan2( -zVec3DNorm( &tmp ), zVec3DInnerProd( a, &((rkCDPlane *)p1)->data.norm ) );
+    th1 = atan2( -zVec3DNorm( &tmp ), zVec3DInnerProd( a, &p1->data.norm ) );
   else
-    th1 = atan2(  zVec3DNorm( &tmp ), zVec3DInnerProd( a, &((rkCDPlane *)p1)->data.norm ) );
-  zVec3DOuterProd( a, &((rkCDPlane *)p2)->data.norm, &tmp );
+    th1 = atan2(  zVec3DNorm( &tmp ), zVec3DInnerProd( a, &p1->data.norm ) );
+  zVec3DOuterProd( a, &p2->data.norm, &tmp );
   if( zVec3DInnerProd( &tmp, n ) > 0 )
-    th2 = atan2( -zVec3DNorm( &tmp ), zVec3DInnerProd( a, &((rkCDPlane *)p2)->data.norm ) );
+    th2 = atan2( -zVec3DNorm( &tmp ), zVec3DInnerProd( a, &p2->data.norm ) );
   else
-    th2 = atan2(  zVec3DNorm( &tmp ), zVec3DInnerProd( a, &((rkCDPlane *)p2)->data.norm ) );
+    th2 = atan2(  zVec3DNorm( &tmp ), zVec3DInnerProd( a, &p2->data.norm ) );
   if( zIsTiny( th1 - th2 ) ) return 0;
   return th1 > th2 ? 1: -1;
 }
