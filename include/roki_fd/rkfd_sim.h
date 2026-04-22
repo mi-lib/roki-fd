@@ -29,7 +29,7 @@ typedef struct{
   zVecStruct _acc; /* acceleration */
 } rkFDCellDat;
 
-zListClass( rkFDCellList, rkFDCell, rkFDCellDat );
+ZEDA_DEF_LIST_CLASS( rkFDCellList, rkFDCell, rkFDCellDat );
 
 #define rkFDCellDatChain(d) rkFDChainBase(&(d)->fc)
 #define rkFDCellChain(c)    rkFDCellDatChain(&(c)->data)
