@@ -14,7 +14,7 @@
 
 __BEGIN_DECLS
 
-zArrayClass( rkCDPairArray, rkCDPairDat* );
+ZEDA_DEF_ARRAY_CLASS( rkCDPairArray, rkCDPairDat* );
 /* typedef struct{ */
 /*   rkCDPairDat* pd; */
 /*   void *prp; */

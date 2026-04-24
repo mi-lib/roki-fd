@@ -1,3 +1,4 @@
+2026.04.24. Applied renaming of zArrayClass to ZEDA_DEF_ARRAY_CLASS. [rkfd_cd, rkfd_chain]
 2026.04.22. Applied renaming of zListClass to ZEDA_DEF_LIST_CLASS. [rkfd_sim, rkfd_opt_qp]
 2026.04.19. Modified argument types of __rk_fd_plane_cmp as to conform to new specification of ZEDA_DEF_LIST_QUICKSORT. [rkfd_volume]
 2026.01.23. Modified rkFDODECatDefault, rkFDODESubDefault, rkFDFK, and rkFDUpdateRate to use zVecAssignArray. [rkfd_sim]
