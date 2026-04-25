@@ -12,7 +12,7 @@ typedef struct{ /* list of active set indices */
   zIndex idx;
   double min;
 } _rkFDQPASMIndexData;
-zListClass( _rkFDQPASMIndexList, _rkFDQPASMIndex, _rkFDQPASMIndexData );
+ZEDA_DEF_LIST_CLASS( _rkFDQPASMIndexList, _rkFDQPASMIndex, _rkFDQPASMIndexData );
 
 static zVec _rkFDQPSolveASMInitDefault(zMat a, zVec b, zVec ans, void *util)
 {

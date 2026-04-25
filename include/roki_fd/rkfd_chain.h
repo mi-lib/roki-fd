@@ -20,7 +20,7 @@ typedef struct{
 #define rkFDChainBase(c)    ( (rkChain*)(c) )
 #define rkFDChainDerived(c) ( (rkFDChain*)(c) )
 
-zArrayClass( rkFDChainArray, rkFDChain* );
+ZEDA_DEF_ARRAY_CLASS( rkFDChainArray, rkFDChain* );
 #define rkFDChainArrayNum(c)    zArrayNum(c)
 #define rkFDChainArrayElem(c,i) *zArrayElem(c,i)
 
